@@ -11,10 +11,10 @@ jobs:
       - run: go version
       - run: gofmt -l -s
       - run: |
-        echo PWD
-        pwd
-        echo 'ls -l:'
-        ls -l
+          echo PWD
+          pwd
+          echo 'ls -l:'
+          ls -l
       - name: Go fmt linting
         run: |
           FMT_RESULT="$(gofmt -l -s)"
