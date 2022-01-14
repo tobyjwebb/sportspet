@@ -6,6 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: go version
+      - run: gofmt -l -s
       - name: Go fmt linting
         run: |
           FMT_RESULT="$(gofmt -l -s)"
