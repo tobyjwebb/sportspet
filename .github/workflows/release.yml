@@ -2,6 +2,7 @@ name: Release
 on:
   push:
     branches:
+      - main # There's no "master" branch (yet)
       - master
 
 env:
