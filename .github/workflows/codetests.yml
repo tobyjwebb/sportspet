@@ -9,17 +9,4 @@ jobs:
         with:
           go-version: '^1.17.6'
       - run: go version
-      - run: gofmt -l -s
-      - run: |
-          echo PWD
-          pwd
-          echo 'ls -l:'
-          ls -l
-      - name: Go fmt linting
-        run: |
-          FMT_RESULT="$(gofmt -l -s)"
-          [ -z "$FMT_RESULT" ] || {
-            echo "Bad formatting in these files:" >&2
-            echo "$FMT_RESULT" >&2
-            return 1
-          }
+      - run: ./tools/gofmt_check.sh
