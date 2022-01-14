@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_library(
     name = "web_frontend_lib",
@@ -10,5 +11,11 @@ go_library(
 go_binary(
     name = "web_frontend",
     embed = [":web_frontend_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image",
+    binary = ":web_frontend",
     visibility = ["//visibility:public"],
 )

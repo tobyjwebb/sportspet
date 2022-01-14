@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
 
 func main() {
-	fmt.Println("TODO: Implement server") // XXX implement main
+	addr := os.Getenv("TC_FRONTEND_ADDR")
+	if addr == "" {
+		addr = ":8080"
+	}
+	fmt.Println("Starting server on", addr)
+	http.ListenAndServe(addr, nil)
 }

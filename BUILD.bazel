@@ -1,6 +1,8 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_go//go:def.bzl", "nogo")
 load("@com_github_sluongng_staticcheck_codegen//:def.bzl", "SENSIBLE_ANALYZERS")
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
 
 # gazelle:prefix github.com/tobyjwebb/teamchess
 gazelle(name = "gazelle")
@@ -21,4 +23,17 @@ nogo(
     config = "nogo_config.json",
     visibility = ["//visibility:public"],
     deps = SENSIBLE_ANALYZERS,
+)
+
+container_bundle(
+    name = "container-bundle",
+    images = {
+        "{DOCKER_REGISTRY}/{DOCKER_REPOSITORY}-web_frontend:{DOCKER_IMAGE_TAG}": "//src/cmd/web_frontend:image",
+        "{DOCKER_REGISTRY}/{DOCKER_REPOSITORY}-web_frontend:latest": "//src/cmd/web_frontend:image",
+    },
+)
+
+docker_push(
+    name = "docker-push",
+    bundle = ":container-bundle",
 )

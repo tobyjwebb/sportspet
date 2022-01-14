@@ -1,0 +1,43 @@
+name: Release
+on: [push]
+  # push:
+  #   branches:
+  #     - master
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_REPOSITORY: tobyjwebb/teamchess
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to ghcr
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache bazel
+        uses: actions/cache@v2.1.7
+        env:
+          cache-name: teamchess-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: ${{ runner.os }}-${{ env.cache-name }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set tag
+        run: |
+          echo "DOCKER_IMAGE_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Run tests
+        run: |
+          bazel test --nokeep_state_after_build --build_tests_only //...
+      - name: Push images
+        run: |
+          bazel run --nokeep_state_after_build --stamp --workspace_status_command=tools/bazel_ci_env.sh //:docker-push
+      - name: Remove config file
+        run: |
+          rm -rf ~/.docker
