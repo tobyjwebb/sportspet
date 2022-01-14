@@ -1,0 +1,15 @@
+name: Code static checks
+on: [push]
+jobs:
+  static-code-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Go fmt linting
+        run: |
+          FMT_RESULT="$(gofmt -l -s)"
+          [ -z "$FMT_RESULT" ] || {
+            echo "Bad formatting in these files:" >&2
+            echo "$FMT_RESULT" >&2
+            return 1
+          }
