@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "web_frontend",
+    srcs = [
+        "index.go",
+        "server.go",
+    ],
+    embedsrcs = ["html/index.html"],
+    importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
+    visibility = ["//visibility:public"],
+    deps = ["//src/settings"],
+)

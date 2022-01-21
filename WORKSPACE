@@ -27,12 +27,12 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 # The first declaration of an external repository "wins".
 ############################################################
 
+go_rules_dependencies()
+
 load("//:deps.bzl", "go_dependencies")
 
 # gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
-
-go_rules_dependencies()
 
 go_register_toolchains(
     nogo = "@//:nogo",
