@@ -1,24 +1,21 @@
 package service
 
-import (
-	"log"
-	"net/http"
-
-	"github.com/tobyjwebb/teamchess/src/settings"
-)
-
-type server struct {
-	config settings.Config
+type UserService interface {
+	Login(nick string) (sessionID string, err error)
 }
 
-func NewServer(c *settings.Config) *server {
-	return &server{config: *c}
-}
+// type server struct {
+// 	config settings.Config
+// }
 
-func (s *server) Start() {
-	http.HandleFunc("/api/v1/user/login", LoginHandler)
+// func NewServer(c *settings.Config) *server {
+// 	return &server{config: *c}
+// }
 
-	addr := s.config.UserServiceAddr
-	log.Println("Starting user service server on", addr)
-	http.ListenAndServe(addr, nil)
-}
+// func (s *server) Start() {
+// 	http.HandleFunc("/api/v1/user/login", LoginHandler)
+
+// 	addr := s.config.UserServiceAddr
+// 	log.Println("Starting user service server on", addr)
+// 	http.ListenAndServe(addr, nil)
+// }

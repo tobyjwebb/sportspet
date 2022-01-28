@@ -1,18 +1,11 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "service",
     srcs = [
-        "login.go",
         "user_service.go",
+        "user_service_mock.go",
     ],
     importpath = "github.com/tobyjwebb/teamchess/src/user/service",
     visibility = ["//visibility:public"],
-    deps = ["//src/settings"],
-)
-
-go_test(
-    name = "service_test",
-    srcs = ["login_test.go"],
-    deps = [":service"],
 )

@@ -8,10 +8,10 @@ def go_dependencies():
     """
     go_repository(
         name = "co_honnef_go_tools",
-        build_file_proto_mode = "disable_global",
         build_directives = [
             "gazelle:exclude **/testdata/**",  # keep
         ],
+        build_file_proto_mode = "disable_global",
         importpath = "honnef.co/go/tools",
         sum = "h1:/EPr//+UMMXwMTkXvCCoaJDq8cpjMO80Ou+L4PDo2mY=",
         version = "v0.2.1",
