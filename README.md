@@ -6,6 +6,7 @@ A pet project for the 1st period of 2022.
 
 ```shell
 modd # Build and run the project, reloading if changes are detected
+bazel run //src/cmd/web_frontend # Run the web frontend
 ```
 
 ## Env variables
