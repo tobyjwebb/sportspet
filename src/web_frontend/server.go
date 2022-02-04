@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/tobyjwebb/teamchess/src/settings"
-	"github.com/tobyjwebb/teamchess/src/user/service"
+	user_service "github.com/tobyjwebb/teamchess/src/user/service"
 )
 
 type Server struct {
 	config      settings.Config
-	UserService service.UserService
+	UserService user_service.UserService
 }
 
 func NewServer(c *settings.Config) *Server {
@@ -20,7 +20,7 @@ func NewServer(c *settings.Config) *Server {
 	}
 	return &Server{
 		config: *config,
-		UserService: &service.UserServiceMock{ // XXX use real user service
+		UserService: &user_service.UserServiceMock{ // XXX use real user service
 			LoginFn: func(nick string) (sessionID string, err error) {
 				return "to-be-implemented-session-id-for-" + nick, nil
 			},

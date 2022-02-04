@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tobyjwebb/teamchess/src/user/service"
+	user_service "github.com/tobyjwebb/teamchess/src/user/service"
 	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
 
@@ -20,7 +20,7 @@ func TestLoginHandler(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
-		userService  service.UserService
+		userService  user_service.UserService
 		wantStatus   int
 		wantLocation string
 	}{
@@ -30,7 +30,7 @@ func TestLoginHandler(t *testing.T) {
 				method: http.MethodPost,
 				user:   "myname",
 			},
-			&service.UserServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
+			&user_service.UserServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
 				if nick != "myname" {
 					t.Errorf("Unexpected name received: %s", nick)
 				}
