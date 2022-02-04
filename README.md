@@ -2,6 +2,12 @@
 
 A pet project for the 1st period of 2022.
 
+## Available commands
+
+```shell
+modd # Build and run the project, reloading if changes are detected
+```
+
 ## Env variables
 
 The following environment variables can be used:
