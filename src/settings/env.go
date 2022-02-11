@@ -24,5 +24,6 @@ func GetConfig() *Config {
 	return &Config{
 		FrontendAddr:    frontendAddr,
 		UserServiceAddr: userServiceAddr,
+		RedisAddr:       redisAddr,
 	}
 }
