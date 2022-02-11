@@ -4,7 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/tobyjwebb/teamchess/src/user/service/redis"
+	"github.com/go-redis/redis/v8"
+	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 func TestRedisUserService_Login(t *testing.T) {
@@ -14,13 +15,16 @@ func TestRedisUserService_Login(t *testing.T) {
 
 	ctx := context.Background()
 
-	redisContainer, err := redis.SetupRedisTestContainer(ctx)
+	redisContainer, err := redis_user_service.SetupRedisTestContainer(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer redisContainer.Terminate(ctx)
+	client := redis.NewClient(&redis.Options{
+		Addr: redisContainer.Addr,
+	})
 
-	r, err := redis.New(redisContainer.Addr)
+	r, err := redis_user_service.New(client)
 	if err != nil {
 		t.Fatalf("Could not get Redis User Service: %v", err)
 	}

@@ -1,17 +1,20 @@
 package web_frontend
 
 import (
+	"context"
 	"log"
 	"net/http"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
-	"github.com/tobyjwebb/teamchess/src/user/service/redis"
+	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 type Server struct {
 	config      settings.Config
 	UserService user_service.UserService
+	redisClient *redis.Client
 }
 
 func NewServer(c *settings.Config) *Server {
@@ -41,9 +44,29 @@ func (s *Server) initUserService() {
 	if s.UserService != nil {
 		return
 	}
-	redisUserService, err := redis.New(s.config.RedisAddr)
+	client, err := s.getRedisClient()
+	if err != nil {
+		panic(err)
+	}
+	redisUserService, err := redis_user_service.New(client)
 	if err != nil {
 		panic(err)
 	}
 	s.UserService = redisUserService
+}
+
+func (s *Server) getRedisClient() (*redis.Client, error) {
+	if s.redisClient != nil {
+		return s.redisClient, nil
+	}
+	client := redis.NewClient(&redis.Options{
+		Addr: s.config.RedisAddr,
+	})
+	ctx := context.Background()
+	res := client.Ping(ctx)
+	if err := res.Err(); err != nil {
+		return nil, err
+	}
+	s.redisClient = client
+	return client, nil
 }

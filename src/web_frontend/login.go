@@ -20,7 +20,7 @@ func (s *Server) LoginHandler(rw http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-		url = "/web/session/" + sessionID
+		url = "/main.html?session=" + sessionID
 	}
 
 	http.Redirect(rw, r, url, http.StatusTemporaryRedirect)

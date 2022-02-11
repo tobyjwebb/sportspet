@@ -3,7 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_test(
     name = "redis_test",
     srcs = ["redis_user_service_test.go"],
-    deps = [":redis"],
+    deps = [
+        ":redis",
+        "@com_github_go_redis_redis_v8//:redis",
+    ],
 )
 
 go_library(

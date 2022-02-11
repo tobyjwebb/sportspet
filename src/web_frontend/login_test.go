@@ -37,7 +37,7 @@ func TestLoginHandler(t *testing.T) {
 				return "the_session_id", nil
 			}},
 			http.StatusTemporaryRedirect,
-			"/web/session/the_session_id",
+			"/main.html?session=the_session_id",
 		},
 		{
 			"Post login without a user redirects to nick-required page",
