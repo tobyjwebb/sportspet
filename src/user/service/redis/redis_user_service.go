@@ -2,11 +2,12 @@ package redis
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
+
+const sessionsKey = "sessions"
 
 var ctx = context.Background()
 
@@ -26,9 +27,18 @@ type redisUserService struct {
 }
 
 func (r *redisUserService) Login(nick string) (sessionID string, err error) {
-	// XXX implement
-
-	sessionID = uuid.NewString()
-	err = fmt.Errorf("Not implemented yet!")
+	res, err := r.client.HGet(ctx, sessionsKey, nick).Result()
+	if err == redis.Nil {
+		// Create and store new sessionid
+		sessionID = uuid.NewString()
+		_, err = r.client.HSet(ctx, sessionsKey, nick, sessionID).Result()
+		if err != nil {
+			return "", err
+		}
+	} else if err != nil {
+		return "", err
+	} else {
+		sessionID = res
+	}
 	return
 }

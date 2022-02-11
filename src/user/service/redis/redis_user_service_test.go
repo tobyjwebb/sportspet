@@ -28,10 +28,34 @@ func TestRedisUserService_Login(t *testing.T) {
 		t.Fatalf("Could not get Redis User Service: %v", err)
 	}
 
-	gotSession, gotErr := r.Login("dummy")
+	// First login should return a unique session ID
+	gotUser1Session, gotErr := r.Login("user1")
 
-	if gotSession == "" {
+	if gotUser1Session == "" {
 		t.Errorf("Got empty session ID")
+	}
+	if gotErr != nil {
+		t.Errorf("Got unexpected error: %v", gotErr)
+	}
+
+	// Second login should return same session ID
+	gotUser1Session2, gotErr := r.Login("user1")
+
+	if gotUser1Session2 != gotUser1Session {
+		t.Errorf("Was expecting same session ID, got different one: %s != %s", gotUser1Session, gotUser1Session2)
+	}
+	if gotErr != nil {
+		t.Errorf("Got unexpected error: %v", gotErr)
+	}
+
+	// Login with a different user should yield a different session ID
+	gotUser2Session, gotErr := r.Login("user2")
+
+	if gotUser2Session == "" {
+		t.Errorf("Got empty session ID")
+	}
+	if gotUser2Session == gotUser1Session {
+		t.Errorf("Was expecting different session ID, got same one: %s == %s", gotUser1Session, gotUser2Session)
 	}
 	if gotErr != nil {
 		t.Errorf("Got unexpected error: %v", gotErr)
