@@ -6,6 +6,7 @@ import (
 
 	"github.com/tobyjwebb/teamchess/src/settings"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
+	"github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 type Server struct {
@@ -20,15 +21,11 @@ func NewServer(c *settings.Config) *Server {
 	}
 	return &Server{
 		config: *config,
-		UserService: &user_service.UserServiceMock{ // XXX use real user service
-			LoginFn: func(nick string) (sessionID string, err error) {
-				return "to-be-implemented-session-id-for-" + nick, nil
-			},
-		},
 	}
 }
 
 func (s *Server) Start() {
+	s.initUserService()
 	setupHtmlHandler()
 	s.SetupRoutes()
 
@@ -38,4 +35,15 @@ func (s *Server) Start() {
 
 func (s *Server) SetupRoutes() {
 	http.HandleFunc("/login", s.LoginHandler)
+}
+
+func (s *Server) initUserService() {
+	if s.UserService != nil {
+		return
+	}
+	redisUserService, err := redis.New(s.config.RedisAddr)
+	if err != nil {
+		panic(err)
+	}
+	s.UserService = redisUserService
 }

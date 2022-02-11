@@ -16,6 +16,7 @@ go_library(
     deps = [
         "//src/settings",
         "//src/user/service",
+        "//src/user/service/redis",
     ],
 )
 
