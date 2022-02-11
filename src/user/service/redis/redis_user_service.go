@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
@@ -27,7 +28,7 @@ type redisUserService struct {
 }
 
 func (r *redisUserService) Login(nick string) (sessionID string, err error) {
-	res, err := r.client.HGet(ctx, sessionsKey, nick).Result()
+	_, err = r.client.HGet(ctx, sessionsKey, nick).Result()
 	if err == redis.Nil {
 		// Create and store new sessionid
 		sessionID = uuid.NewString()
@@ -38,7 +39,7 @@ func (r *redisUserService) Login(nick string) (sessionID string, err error) {
 	} else if err != nil {
 		return "", err
 	} else {
-		sessionID = res
+		return "", fmt.Errorf("nick %s is already in use", nick)
 	}
 	return
 }

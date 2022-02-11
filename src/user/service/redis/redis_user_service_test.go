@@ -35,14 +35,11 @@ func TestRedisUserService_Login(t *testing.T) {
 		t.Errorf("Got unexpected error: %v", gotErr)
 	}
 
-	// Second login should return same session ID
-	gotUser1Session2, gotErr := r.Login("user1")
+	// Second login should return an error for the same user
+	_, gotErr = r.Login("user1")
 
-	if gotUser1Session2 != gotUser1Session {
-		t.Errorf("Was expecting same session ID, got different one: %s != %s", gotUser1Session, gotUser1Session2)
-	}
-	if gotErr != nil {
-		t.Errorf("Got unexpected error: %v", gotErr)
+	if gotErr == nil {
+		t.Errorf("Was expecting error, got none")
 	}
 
 	// Login with a different user should yield a different session ID
