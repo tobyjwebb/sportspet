@@ -1,16 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"os"
+	"github.com/tobyjwebb/teamchess/src/settings"
+	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
 
 func main() {
-	addr := os.Getenv("TC_FRONTEND_ADDR")
-	if addr == "" {
-		addr = ":8080"
-	}
-	fmt.Println("Starting server on", addr)
-	http.ListenAndServe(addr, nil)
+	cfg := settings.GetConfig()
+	server := web_frontend.NewServer(cfg)
+	server.Start()
 }

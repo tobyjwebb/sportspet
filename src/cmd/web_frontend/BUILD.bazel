@@ -6,6 +6,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/tobyjwebb/teamchess/src/cmd/web_frontend",
     visibility = ["//visibility:private"],
+    deps = [
+        "//src/settings",
+        "//src/web_frontend",
+    ],
 )
 
 go_binary(

@@ -1,12 +1,27 @@
 name: Code static checks
 on: [push]
 jobs:
-  static-code-check:
+  code-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: '^1.17.6'
+          go-version: '^1.17.7'
       - run: go version
       - run: ./tools/gofmt_check.sh
+      - name: Cache bazel
+        uses: actions/cache@v2.1.7
+        env:
+          cache-name: teamchess-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: ${{ runner.os }}-${{ env.cache-name }}
+      - name: Run tests
+        run: |
+          bazel test --build_tests_only //...
+      - name: Build everything
+        run: |
+          bazel build //...
