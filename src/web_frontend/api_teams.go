@@ -12,9 +12,9 @@ func (s *Server) TeamsHandler(rw http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(rw, `{"name":"new_team_stub","id":"stub-team-id"}`)
 	case http.MethodGet:
 		fmt.Fprintf(rw, `[
-			{"name":"team1"},
-			{"name":"team2"},
-			{"name":"team3"}
+			{"name":"team1","id":"id1"},
+			{"name":"team2","id":"id2"},
+			{"name":"team3","id":"id3"}
 			]`)
 	default:
 		rw.WriteHeader(http.StatusMethodNotAllowed)

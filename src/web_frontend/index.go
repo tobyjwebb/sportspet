@@ -10,7 +10,7 @@ import (
 //go:embed html
 var staticFiles embed.FS
 
-func setupHtmlHandler() {
+func (s *Server) setupHtmlHandler() {
 	var staticFS = fs.FS(staticFiles)
 	htmlContent, err := fs.Sub(staticFS, "html")
 	if err != nil {
@@ -19,5 +19,5 @@ func setupHtmlHandler() {
 	fs := http.FileServer(http.FS(htmlContent))
 
 	// Serve static files
-	http.Handle("/", fs)
+	s.router.Handle("/*", fs)
 }

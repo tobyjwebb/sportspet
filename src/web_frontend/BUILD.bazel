@@ -20,6 +20,7 @@ go_library(
         "//src/settings",
         "//src/user/service",
         "//src/user/service/redis",
+        "@com_github_go_chi_chi_v5//:chi",
         "@com_github_go_redis_redis_v8//:redis",
     ],
 )

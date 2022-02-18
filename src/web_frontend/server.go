@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
@@ -15,6 +16,7 @@ type Server struct {
 	config      settings.Config
 	UserService user_service.UserService
 	redisClient *redis.Client
+	router      *chi.Mux
 }
 
 func NewServer(c *settings.Config) *Server {
@@ -28,17 +30,20 @@ func NewServer(c *settings.Config) *Server {
 }
 
 func (s *Server) Start() {
+	s.router = chi.NewRouter()
+
 	s.initUserService()
-	setupHtmlHandler()
-	s.SetupRoutes()
+	s.setupHtmlHandler()
+	s.setupRoutes()
 
 	log.Println("Starting server on", s.config.FrontendAddr)
-	http.ListenAndServe(s.config.FrontendAddr, nil)
+	http.ListenAndServe(s.config.FrontendAddr, s.router)
 }
 
-func (s *Server) SetupRoutes() {
-	http.HandleFunc("/login", s.LoginHandler)
-	http.HandleFunc("/api/v1/teams", s.TeamsHandler)
+func (s *Server) setupRoutes() {
+	s.router.Post("/login", s.LoginHandler)
+	s.router.Get("/api/v1/teams", s.TeamsHandler)
+	s.router.Post("/api/v1/teams", s.TeamsHandler)
 }
 
 func (s *Server) initUserService() {
