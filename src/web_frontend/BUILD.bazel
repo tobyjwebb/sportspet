@@ -6,6 +6,7 @@ go_library(
         "api_teams.go",
         "index.go",
         "login.go",
+        "routes.go",
         "server.go",
     ],
     embedsrcs = [

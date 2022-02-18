@@ -3,22 +3,31 @@ package web_frontend
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
-func (s *Server) TeamsHandler(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("content-type", "application/json")
-	switch r.Method {
-	case http.MethodPost:
-		fmt.Fprintf(rw, `{"name":"new_team_stub","id":"stub-team-id"}`)
-	case http.MethodGet:
-		fmt.Fprintf(rw, `[
+func (s *Server) setupTeamsRoutes() *chi.Mux {
+	teams := chi.NewRouter()
+	teams.Get("/", s.listTeams)
+	teams.Post("/", s.createTeam)
+	teams.Post("/{team_id}/join", s.joinTeam)
+	return teams
+}
+
+func (s *Server) listTeams(rw http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(rw, `[
 			{"name":"team1","id":"id1"},
 			{"name":"team2","id":"id2"},
+			{"name":"team2.5","id":"id2andahalf"},
 			{"name":"team3","id":"id3"}
 			]`)
-	default:
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintf(rw, `{"error": "method not allowed"}`)
-		return
-	}
+}
+
+func (s *Server) createTeam(rw http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(rw, `{"name":"new_team_stub","id":"stub-team-id"}`)
+}
+
+func (s *Server) joinTeam(rw http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(rw, `{"warning":"not implemented"}`)
 }

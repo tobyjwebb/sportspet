@@ -40,12 +40,6 @@ func (s *Server) Start() {
 	http.ListenAndServe(s.config.FrontendAddr, s.router)
 }
 
-func (s *Server) setupRoutes() {
-	s.router.Post("/login", s.LoginHandler)
-	s.router.Get("/api/v1/teams", s.TeamsHandler)
-	s.router.Post("/api/v1/teams", s.TeamsHandler)
-}
-
 func (s *Server) initUserService() {
 	if s.UserService != nil {
 		return
