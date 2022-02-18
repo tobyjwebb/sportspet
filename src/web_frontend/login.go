@@ -1,12 +1,11 @@
 package web_frontend
 
 import (
-	"log"
 	"net/http"
 )
 
 func (s *Server) LoginHandler(rw http.ResponseWriter, r *http.Request) {
-	log.Printf("In LoginHandler: r: %v\n", r)
+	// log.Printf("In LoginHandler: r: %v\n", r)
 	if r.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
 		return

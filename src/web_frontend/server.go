@@ -38,6 +38,7 @@ func (s *Server) Start() {
 
 func (s *Server) SetupRoutes() {
 	http.HandleFunc("/login", s.LoginHandler)
+	http.HandleFunc("/api/v1/teams", s.TeamsHandler)
 }
 
 func (s *Server) initUserService() {
