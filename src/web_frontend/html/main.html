@@ -6,7 +6,45 @@
 </head>
 
 <body>
-    <h1>XXX Main Page</h1>
+    <h1>Welcome to TeamChess!</h1>
+
+    <div id="teams">
+
+        <div class="overview">
+            <h3>Teams:</h3>
+            <p>Current team: <span id="current_team">[none]</span></p>
+
+            <p id="team_btns">
+                <button id="btnCreateTeam">Create team</button>
+                <button id="btnJoinTeam">Join team</button>
+            </p>
+        </div>
+
+        <div class="new" style="display: none">
+            <h3>Create new team</h3>
+            <p>Team name: <input name="name"></p>
+            <p>
+                <button id="btnConfirmCreateTeam">Create</button>
+                <button id="btnCancelCreateTeam">Cancel</button>
+            </p>
+        </div>
+
+        <div class="join" style="display: none">
+            <h3>Join team:</h3>
+            <p class="loading state">Loading teams...</p>
+            <p class="nonfound state">No teams found</p>
+            <p class="list state">
+            <ul>
+                <!-- To be filled in dynamically-->
+            </ul>
+            </p>
+            <p>
+                <button id="btnConfirmJoinTeam">Join</button>
+                <button id="btnCancelJoinTeam">Cancel</button>
+            </p>
+        </div>
+
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
