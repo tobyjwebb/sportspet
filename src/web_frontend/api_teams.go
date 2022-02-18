@@ -7,6 +7,10 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+func setJSON(rw http.ResponseWriter) {
+	rw.Header().Set("Content-Type", "application/json")
+}
+
 func (s *Server) setupTeamsRoutes() *chi.Mux {
 	teams := chi.NewRouter()
 	teams.Get("/", s.listTeams)
@@ -16,6 +20,7 @@ func (s *Server) setupTeamsRoutes() *chi.Mux {
 }
 
 func (s *Server) listTeams(rw http.ResponseWriter, r *http.Request) {
+	setJSON(rw)
 	fmt.Fprintf(rw, `[
 			{"name":"team1","id":"id1"},
 			{"name":"team2","id":"id2"},
@@ -25,9 +30,11 @@ func (s *Server) listTeams(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) createTeam(rw http.ResponseWriter, r *http.Request) {
+	setJSON(rw)
 	fmt.Fprintf(rw, `{"name":"new_team_stub","id":"stub-team-id"}`)
 }
 
 func (s *Server) joinTeam(rw http.ResponseWriter, r *http.Request) {
+	setJSON(rw)
 	fmt.Fprintf(rw, `{"warning":"not implemented"}`)
 }
