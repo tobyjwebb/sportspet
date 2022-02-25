@@ -3,6 +3,7 @@ package web_frontend
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -41,11 +42,12 @@ func (s *Server) CreateTeamHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.TeamService.CreateTeam(team); err != nil {
-		panic(err) // XXX handle?
+		log.Printf("Error creating team: %v", err)
+		panic(err)
 	}
 
+	setJSON(rw)
 	rw.WriteHeader(http.StatusCreated)
-
 	encoder := json.NewEncoder(rw)
 	if err := encoder.Encode(team); err != nil {
 		panic(err)

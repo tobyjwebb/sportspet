@@ -21,6 +21,7 @@ go_library(
     deps = [
         "//src/settings",
         "//src/teams",
+        "//src/teams/redis",
         "//src/user/service",
         "//src/user/service/redis",
         "@com_github_go_chi_chi_v5//:chi",

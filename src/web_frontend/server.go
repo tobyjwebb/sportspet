@@ -10,6 +10,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	"github.com/tobyjwebb/teamchess/src/teams"
+	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
 	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
@@ -38,6 +39,9 @@ func (s *Server) Start() error {
 	if err := s.initUserService(); err != nil {
 		return fmt.Errorf("could not init user service: %w", err)
 	}
+	if err := s.initTeamService(); err != nil {
+		return fmt.Errorf("could not init team service: %w", err)
+	}
 	s.setupHtmlHandler()
 	s.setupRoutes()
 
@@ -58,6 +62,22 @@ func (s *Server) initUserService() error {
 		return fmt.Errorf("could not init Redis user service: %w", err)
 	}
 	s.UserService = redisUserService
+	return nil
+}
+
+func (s *Server) initTeamService() error {
+	if s.TeamService != nil {
+		return nil
+	}
+	client, err := s.getRedisClient()
+	if err != nil {
+		return fmt.Errorf("could not init Redis client: %w", err)
+	}
+	redisTeamService, err := redis_team_service.New(client)
+	if err != nil {
+		return fmt.Errorf("could not init Redis team service: %w", err)
+	}
+	s.TeamService = redisTeamService
 	return nil
 }
 

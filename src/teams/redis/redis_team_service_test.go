@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/tobyjwebb/teamchess/src/teams"
 	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
 	"github.com/tobyjwebb/teamchess/src/test"
 )
@@ -27,38 +28,17 @@ func TestRedisUserService_Login(t *testing.T) {
 
 	r, err := redis_team_service.New(client)
 	if err != nil {
-		t.Fatalf("Could not get Redis User Service: %v", err)
+		t.Fatalf("Could not get Redis Team Service: %v", err)
 	}
 
-	// First login should return a unique session ID
-	gotUser1Session, gotErr := r.Login("user1")
+	team := &teams.Team{}
+	gotErr := r.CreateTeam(team)
 
-	if gotUser1Session == "" {
-		t.Errorf("Got empty session ID")
-	}
 	if gotErr != nil {
 		t.Errorf("Got unexpected error: %v", gotErr)
 	}
 
-	// Second login should return no error, but empty session
-	gotRepeatSession, gotErr := r.Login("user1")
-	if gotRepeatSession != "" {
-		t.Errorf("Was expecting empty session, got: %q", gotRepeatSession)
-	}
-	if gotErr != nil {
-		t.Errorf("Got unexpected error: %v", gotErr)
-	}
-
-	// Login with a different user should yield a different session ID
-	gotUser2Session, gotErr := r.Login("user2")
-
-	if gotUser2Session == "" {
-		t.Errorf("Got empty session ID")
-	}
-	if gotUser2Session == gotUser1Session {
-		t.Errorf("Was expecting different session ID, got same one: %s == %s", gotUser1Session, gotUser2Session)
-	}
-	if gotErr != nil {
-		t.Errorf("Got unexpected error: %v", gotErr)
+	if team.ID == "" {
+		t.Errorf("Team ID has not been initialized")
 	}
 }

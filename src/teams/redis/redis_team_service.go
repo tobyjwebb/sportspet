@@ -2,37 +2,44 @@ package redis
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/tobyjwebb/teamchess/src/teams"
 )
 
-const sessionsKey = "sessions"
+const (
+	teamsKey          = "teams"
+	teamPropertiesKey = "teams:%s:properties"
+	teamMembersKey    = "teams:%s:members"
+)
 
 var ctx = context.Background()
 
-func New(client *redis.Client) (*redisUserService, error) {
-
-	return &redisUserService{client: client}, nil
+func New(client *redis.Client) (*redisTeamService, error) {
+	return &redisTeamService{client: client}, nil
 }
 
-type redisUserService struct {
+type redisTeamService struct {
 	client *redis.Client
 }
 
-func (r *redisUserService) Login(nick string) (sessionID string, err error) {
-	_, err = r.client.HGet(ctx, sessionsKey, nick).Result()
-	if err == redis.Nil {
-		// Create and store new sessionid
-		sessionID = uuid.NewString()
-		_, err = r.client.HSet(ctx, sessionsKey, nick, sessionID).Result()
-		if err != nil {
-			return "", err
-		}
-	} else if err != nil {
-		return "", err
-	} else {
-		return "", nil
+func (r *redisTeamService) CreateTeam(team *teams.Team) error {
+	newTeamID := uuid.NewString()
+
+	_, err := r.client.RPush(ctx, teamsKey, newTeamID).Result()
+	if err != nil {
+		return fmt.Errorf("could not add team ID to teams list: %w", err)
 	}
-	return
+	_, err = r.client.HSet(ctx, fmt.Sprintf(teamPropertiesKey, newTeamID), "name", team.Name, "owner", team.Owner).Result()
+	if err != nil {
+		return fmt.Errorf("could not set team properties: %w", err)
+	}
+	_, err = r.client.RPush(ctx, fmt.Sprintf(teamMembersKey, newTeamID), team.Owner).Result()
+	if err != nil {
+		return fmt.Errorf("could not add owner to team member list: %w", err)
+	}
+	team.ID = newTeamID
+	return nil
 }

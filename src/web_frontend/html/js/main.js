@@ -1,3 +1,10 @@
+function getSessionID() {
+    var url = window.location.href;
+    var idx = url.lastIndexOf("=")
+    var sessionID = url.substring(idx + 1);
+    return sessionID;
+}
+
 $(function () {
     var currentTeamID = null;
     var $newTeamName = $('#teams input[name=name]');
@@ -38,7 +45,10 @@ $(function () {
         $.ajax({
             url: '/api/v1/teams',
             method: 'post',
-            data: { name: teamName },
+            data: {
+                name: teamName,
+                owner: getSessionID(),
+            },
             success: function (data) {
                 $currentTeam.text(data.name);
                 currentTeamID = data.id;
