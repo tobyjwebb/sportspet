@@ -40,6 +40,21 @@ func TestLoginHandler(t *testing.T) {
 			"/main.html?session=the_session_id",
 		},
 		{
+			"Post login with an already-used nick redirects to nick-already-used",
+			args{
+				method: http.MethodPost,
+				user:   "myname2",
+			},
+			&user_service.UserServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
+				if nick != "myname2" {
+					t.Errorf("Unexpected name received: %s", nick)
+				}
+				return "", nil
+			}},
+			http.StatusTemporaryRedirect,
+			"/nick-already-used.html",
+		},
+		{
 			"Post login without a user redirects to nick-required page",
 			args{
 				method: http.MethodPost,

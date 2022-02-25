@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
@@ -33,7 +32,7 @@ func (r *redisUserService) Login(nick string) (sessionID string, err error) {
 	} else if err != nil {
 		return "", err
 	} else {
-		return "", fmt.Errorf("nick %s is already in use", nick)
+		return "", nil
 	}
 	return
 }

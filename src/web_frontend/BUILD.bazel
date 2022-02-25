@@ -14,6 +14,7 @@ go_library(
         "html/nick-required.html",
         "html/main.html",
         "html/js/main.js",
+        "html/nick-already-used.html",
     ],
     importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
     visibility = ["//visibility:public"],
