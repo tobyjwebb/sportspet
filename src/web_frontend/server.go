@@ -2,6 +2,7 @@ package web_frontend
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -29,30 +30,33 @@ func NewServer(c *settings.Config) *Server {
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start() error {
 	s.router = chi.NewRouter()
 
-	s.initUserService()
+	if err := s.initUserService(); err != nil {
+		return fmt.Errorf("could not init user service: %w", err)
+	}
 	s.setupHtmlHandler()
 	s.setupRoutes()
 
 	log.Println("Starting server on", s.config.FrontendAddr)
-	http.ListenAndServe(s.config.FrontendAddr, s.router)
+	return http.ListenAndServe(s.config.FrontendAddr, s.router)
 }
 
-func (s *Server) initUserService() {
+func (s *Server) initUserService() error {
 	if s.UserService != nil {
-		return
+		return nil
 	}
 	client, err := s.getRedisClient()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not init Redis client: %w", err)
 	}
 	redisUserService, err := redis_user_service.New(client)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not init Redis user service: %w", err)
 	}
 	s.UserService = redisUserService
+	return nil
 }
 
 func (s *Server) getRedisClient() (*redis.Client, error) {
