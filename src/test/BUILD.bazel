@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "test",
+    srcs = ["redis_test_container.go"],
+    importpath = "github.com/tobyjwebb/teamchess/src/test",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_testcontainers_testcontainers_go//:testcontainers-go",
+        "@com_github_testcontainers_testcontainers_go//wait",
+    ],
+)

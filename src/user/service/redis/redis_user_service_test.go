@@ -4,7 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/tobyjwebb/teamchess/src/user/service/redis"
+	"github.com/go-redis/redis/v8"
+	"github.com/tobyjwebb/teamchess/src/test"
+	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 func TestRedisUserService_Login(t *testing.T) {
@@ -14,13 +16,16 @@ func TestRedisUserService_Login(t *testing.T) {
 
 	ctx := context.Background()
 
-	redisContainer, err := redis.SetupRedisTestContainer(ctx)
+	redisContainer, err := test.SetupRedisTestContainer(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer redisContainer.Terminate(ctx)
+	client := redis.NewClient(&redis.Options{
+		Addr: redisContainer.Addr,
+	})
 
-	r, err := redis.New(redisContainer.Addr)
+	r, err := redis_user_service.New(client)
 	if err != nil {
 		t.Fatalf("Could not get Redis User Service: %v", err)
 	}
@@ -35,11 +40,13 @@ func TestRedisUserService_Login(t *testing.T) {
 		t.Errorf("Got unexpected error: %v", gotErr)
 	}
 
-	// Second login should return an error for the same user
-	_, gotErr = r.Login("user1")
-
-	if gotErr == nil {
-		t.Errorf("Was expecting error, got none")
+	// Second login should return no error, but empty session
+	gotRepeatSession, gotErr := r.Login("user1")
+	if gotRepeatSession != "" {
+		t.Errorf("Was expecting empty session, got: %q", gotRepeatSession)
+	}
+	if gotErr != nil {
+		t.Errorf("Got unexpected error: %v", gotErr)
 	}
 
 	// Login with a different user should yield a different session ID

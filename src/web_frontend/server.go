@@ -1,17 +1,26 @@
 package web_frontend
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/settings"
+	"github.com/tobyjwebb/teamchess/src/teams"
+	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
-	"github.com/tobyjwebb/teamchess/src/user/service/redis"
+	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 type Server struct {
 	config      settings.Config
 	UserService user_service.UserService
+	TeamService teams.TeamService
+	redisClient *redis.Client
+	router      *chi.Mux
 }
 
 func NewServer(c *settings.Config) *Server {
@@ -24,26 +33,66 @@ func NewServer(c *settings.Config) *Server {
 	}
 }
 
-func (s *Server) Start() {
-	s.initUserService()
-	setupHtmlHandler()
-	s.SetupRoutes()
+func (s *Server) Start() error {
+	s.router = chi.NewRouter()
+
+	if err := s.initUserService(); err != nil {
+		return fmt.Errorf("could not init user service: %w", err)
+	}
+	if err := s.initTeamService(); err != nil {
+		return fmt.Errorf("could not init team service: %w", err)
+	}
+	s.setupHtmlHandler()
+	s.setupRoutes()
 
 	log.Println("Starting server on", s.config.FrontendAddr)
-	http.ListenAndServe(s.config.FrontendAddr, nil)
+	return http.ListenAndServe(s.config.FrontendAddr, s.router)
 }
 
-func (s *Server) SetupRoutes() {
-	http.HandleFunc("/login", s.LoginHandler)
-}
-
-func (s *Server) initUserService() {
+func (s *Server) initUserService() error {
 	if s.UserService != nil {
-		return
+		return nil
 	}
-	redisUserService, err := redis.New(s.config.RedisAddr)
+	client, err := s.getRedisClient()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not init Redis client: %w", err)
+	}
+	redisUserService, err := redis_user_service.New(client)
+	if err != nil {
+		return fmt.Errorf("could not init Redis user service: %w", err)
 	}
 	s.UserService = redisUserService
+	return nil
+}
+
+func (s *Server) initTeamService() error {
+	if s.TeamService != nil {
+		return nil
+	}
+	client, err := s.getRedisClient()
+	if err != nil {
+		return fmt.Errorf("could not init Redis client: %w", err)
+	}
+	redisTeamService, err := redis_team_service.New(client)
+	if err != nil {
+		return fmt.Errorf("could not init Redis team service: %w", err)
+	}
+	s.TeamService = redisTeamService
+	return nil
+}
+
+func (s *Server) getRedisClient() (*redis.Client, error) {
+	if s.redisClient != nil {
+		return s.redisClient, nil
+	}
+	client := redis.NewClient(&redis.Options{
+		Addr: s.config.RedisAddr,
+	})
+	ctx := context.Background()
+	res := client.Ping(ctx)
+	if err := res.Err(); err != nil {
+		return nil, err
+	}
+	s.redisClient = client
+	return client, nil
 }

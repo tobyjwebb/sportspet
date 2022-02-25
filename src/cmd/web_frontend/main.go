@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/tobyjwebb/teamchess/src/settings"
 	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
@@ -8,5 +10,7 @@ import (
 func main() {
 	cfg := settings.GetConfig()
 	server := web_frontend.NewServer(cfg)
-	server.Start()
+	if err := server.Start(); err != nil {
+		fmt.Println("Could not start server:", err)
+	}
 }

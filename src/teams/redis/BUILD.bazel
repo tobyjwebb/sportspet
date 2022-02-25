@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "redis",
+    srcs = ["redis_team_service.go"],
+    importpath = "github.com/tobyjwebb/teamchess/src/teams/redis",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/teams",
+        "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "redis_test",
+    srcs = ["redis_team_service_test.go"],
+    deps = [
+        ":redis",
+        "//src/teams",
+        "//src/test",
+        "@com_github_go_redis_redis_v8//:redis",
+    ],
+)

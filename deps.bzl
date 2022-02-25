@@ -783,6 +783,14 @@ def go_dependencies():
         version = "v1.0.0",
     )
     go_repository(
+        name = "com_github_go_chi_chi_v5",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/go-chi/chi/v5",
+        sum = "h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=",
+        version = "v5.0.7",
+    )
+
+    go_repository(
         name = "com_github_go_gl_glfw",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/go-gl/glfw",
