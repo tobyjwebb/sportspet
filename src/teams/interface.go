@@ -1,5 +1,7 @@
 package teams
 
-type TeamsService interface {
-	CreateTeam(name, sessionID string) (teamID string, err error)
+type TeamService interface {
+	CreateTeam(*Team) error
+	// ListTeams() ([]Team, error)
+	// JoinTeam(sessionID, teamID string) (*Team, error)
 }

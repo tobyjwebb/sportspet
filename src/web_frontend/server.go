@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/settings"
+	"github.com/tobyjwebb/teamchess/src/teams"
 	user_service "github.com/tobyjwebb/teamchess/src/user/service"
 	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
@@ -16,6 +17,7 @@ import (
 type Server struct {
 	config      settings.Config
 	UserService user_service.UserService
+	TeamService teams.TeamService
 	redisClient *redis.Client
 	router      *chi.Mux
 }

@@ -1,14 +1,14 @@
 package teams
 
+import "fmt"
+
 type TeamServiceMock struct {
-	CreateTeamFn     func(name, sessionID string) (teamID string, err error)
-	CreateTeamCalled bool
+	CreateTeamFn func(*Team) error
 }
 
-func (t *TeamServiceMock) CreateTeam(name, sessionID string) (teamID string, err error) {
-	t.CreateTeamCalled = true
+func (t *TeamServiceMock) CreateTeam(team *Team) error {
 	if t.CreateTeamFn != nil {
-		return t.CreateTeamFn(name, sessionID)
+		return t.CreateTeamFn(team)
 	}
-	return "", nil
+	return fmt.Errorf("CreateTeamFn has not been defined")
 }

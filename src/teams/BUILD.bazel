@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "interface.go",
         "mock.go",
+        "type.go",
     ],
     importpath = "github.com/tobyjwebb/teamchess/src/teams",
     visibility = ["//visibility:public"],

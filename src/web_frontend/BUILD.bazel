@@ -20,6 +20,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//src/settings",
+        "//src/teams",
         "//src/user/service",
         "//src/user/service/redis",
         "@com_github_go_chi_chi_v5//:chi",
@@ -29,9 +30,13 @@ go_library(
 
 go_test(
     name = "web_frontend_test",
-    srcs = ["login_test.go"],
+    srcs = [
+        "api_teams_test.go",
+        "login_test.go",
+    ],
     deps = [
         ":web_frontend",
+        "//src/teams",
         "//src/user/service",
     ],
 )
