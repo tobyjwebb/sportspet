@@ -3,21 +3,26 @@
 
 <head>
     <title>TeamChess</title>
+    <link rel="stylesheet" href="/css/all.css">
 </head>
 
 <body>
-    <h1>Welcome to TeamChess!</h1>
+    <div class="centerbox">
+        <img src="/images/team-chess-logo.png">
+        <h1>Welcome to TeamChess!</h1>
 
-    <p>
-        Please enter your nick:
-    </p>
+        <p>
+            Please enter your nick:
+        </p>
 
-    <p>
-    <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
-        <input type="text" name="nick">
-        <input type="submit" value="Login">
-    </form>
-    </p>
+        <p>
+        <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="text" name="nick">
+            <input type="submit" value="Login">
+        </form>
+        </p>
+
+    </div>
 </body>
 
 </html>

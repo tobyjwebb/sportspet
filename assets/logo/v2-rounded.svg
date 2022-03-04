@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="v2-WIP.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.3380612"
+     inkscape:cx="324.3499"
+     inkscape:cy="240.27302"
+     inkscape:window-width="1530"
+     inkscape:window-height="928"
+     inkscape:window-x="4"
+     inkscape:window-y="60"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath608">
+      <circle
+         style="opacity:0;fill:#ffffff;stroke-width:0.103476"
+         id="circle610"
+         cx="-146.38152"
+         cy="28.209673"
+         r="49.575104" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9334">
+      <ellipse
+         style="opacity:1;fill:#5e88d3;fill-opacity:1;stroke-width:0.256616"
+         id="ellipse9336"
+         cx="500.32535"
+         cy="78.190132"
+         rx="71.293251"
+         ry="70.245888"
+         transform="rotate(120)" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9338">
+      <ellipse
+         style="opacity:1;fill:#5e88d3;fill-opacity:1;stroke-width:0.256616"
+         id="ellipse9340"
+         cx="500.32535"
+         cy="78.190132"
+         rx="71.293251"
+         ry="70.245888" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g9614"
+       transform="matrix(0.38218368,0,0,0.38218368,-127.23995,40.972858)">
+      <ellipse
+         style="opacity:1;fill:#5e88d3;fill-opacity:1;stroke-width:0.256616"
+         id="ellipse6893"
+         cx="500.32535"
+         cy="78.190132"
+         rx="71.293251"
+         ry="70.245888"
+         clip-path="url(#clipPath9338)" />
+      <image
+         width="165.56117"
+         height="124.17088"
+         preserveAspectRatio="none"
+         xlink:href="v1-original.png"
+         id="image6891"
+         x="-401.96631"
+         y="336.28601"
+         transform="rotate(-120)"
+         clip-path="url(#clipPath9334)" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+.centerbox img {
+    width: 400px;
+}
+
+.centerbox {
+    margin: 2em auto 0;
+    width: 400px;
+}
+
+body.main-page {
+    margin-top:55px;
+}
+
+#topbar {
+    position: fixed;
+    height: 50px;
+    background: #8facdf;
+    margin: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+#topbar h1 {
+    position: absolute;
+    margin: 4px 0;
+    right: 60px;
+}
+#topbar img {
+    width: 50px;
+    float: right;
+}
+
+html, body.main-page {
+    margin: 0;
+    padding: 0;
+}
