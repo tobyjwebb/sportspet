@@ -15,6 +15,7 @@ go_library(
         "html/main.html",
         "html/js/main.js",
         "html/nick-already-used.html",
+        ":logo",
     ],
     importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
     visibility = ["//visibility:public"],
@@ -27,6 +28,13 @@ go_library(
         "@com_github_go_chi_chi_v5//:chi",
         "@com_github_go_redis_redis_v8//:redis",
     ],
+)
+
+genrule(
+    name = "logo",
+    srcs = ["//assets/logo:v2-rendered.png"],
+    outs = ["html/images/team-chess-logo.png"],
+    cmd = "mkdir -p html/images && cp $< $@",
 )
 
 go_test(

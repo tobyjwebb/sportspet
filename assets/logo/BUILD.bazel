@@ -1,0 +1,6 @@
+exports_files(
+    ["v2-rendered.png"],
+    visibility = [
+        "//visibility:public",
+    ],
+)
