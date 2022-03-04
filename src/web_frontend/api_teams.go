@@ -19,6 +19,7 @@ func (s *Server) setupTeamsRoutes() *chi.Mux {
 	teams.Get("/", s.listTeams)
 	teams.Post("/", s.CreateTeamHandler)
 	teams.Post("/{team_id}/join", s.joinTeam)
+	teams.Post("/{team_id}/leave", s.leaveTeam)
 	return teams
 }
 
@@ -56,6 +57,12 @@ func (s *Server) CreateTeamHandler(rw http.ResponseWriter, r *http.Request) {
 
 func (s *Server) joinTeam(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement joinTeam action
+	setJSON(rw)
+	fmt.Fprintf(rw, `{"warning":"not implemented"}`)
+}
+
+func (s *Server) leaveTeam(rw http.ResponseWriter, r *http.Request) {
+	// XXX implement leaveTeam action
 	setJSON(rw)
 	fmt.Fprintf(rw, `{"warning":"not implemented"}`)
 }
