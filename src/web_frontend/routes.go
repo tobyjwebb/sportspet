@@ -10,5 +10,7 @@ func (s *Server) setupRoutes() {
 func (s *Server) setupAPIRoutes() *chi.Mux {
 	api := chi.NewRouter()
 	api.Mount("/teams", s.setupTeamsRoutes())
+	api.Mount("/challenges", s.setupChallengesRoutes())
+	api.Mount("/battles", s.setupBattlesRoutes())
 	return api
 }

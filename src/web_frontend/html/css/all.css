@@ -7,10 +7,6 @@
     width: 400px;
 }
 
-body.main-page {
-    margin-top:55px;
-}
-
 #topbar {
     position: fixed;
     height: 50px;
@@ -33,4 +29,8 @@ body.main-page {
 html, body.main-page {
     margin: 0;
     padding: 0;
+}
+
+body.main-page {
+    margin-top:55px;
 }
