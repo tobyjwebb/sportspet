@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "api_battles.go",
         "api_challenges.go",
+        "api_sessions.go",
         "api_teams.go",
         "index.go",
         "login.go",

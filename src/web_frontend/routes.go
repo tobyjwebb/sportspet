@@ -12,5 +12,6 @@ func (s *Server) setupAPIRoutes() *chi.Mux {
 	api.Mount("/teams", s.setupTeamsRoutes())
 	api.Mount("/challenges", s.setupChallengesRoutes())
 	api.Mount("/battles", s.setupBattlesRoutes())
+	api.Mount("/sessions", s.setupSessionsRoutes())
 	return api
 }
