@@ -47,3 +47,12 @@ body {
 .chessboard td.black {
     background: lightgrey;
 }
+.chessboard.your-turn td.white:hover,
+.chessboard.your-turn td.black:hover,
+.chessboard.your-turn td.selected {
+    background: red;
+}
+
+#battle_status {
+    text-align: center;
+}

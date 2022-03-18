@@ -5,7 +5,6 @@ function getAuthHeader() {
 }
 
 $(function () {
-    var currentTeamID = null;
     var $newTeamName = $('#teams input[name=name]');
     var $currentTeam = $('.current_team');
     var $confirmJoinTeam = $('#btnConfirmJoinTeam');
@@ -176,7 +175,9 @@ $(function () {
             url: `/api/v1/challenges/${challengeID}/accept`,
             headers: getAuthHeader(),
             success: function (res) {
-                document.location.href = `/battle.html?session=${getSessionID()}&battle=${res.battle_id}`;
+                // We're not going to need battleID for now, because it's now returned by API
+                // document.location.href = `/battle.html?session=${getSessionID()}&battle=${res.battle_id}`;
+                document.location.href = `/battle.html?session=${getSessionID()}`;
             }
         })
 
