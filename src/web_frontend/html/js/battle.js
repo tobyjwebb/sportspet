@@ -20,9 +20,7 @@ $(function () {
             } else {
                 movement.to = cellID;
                 console.log(`Sending move: ${movement.from}->${movement.to}`);
-                sendBattleMovement(currentBattle, movement.from, movement.to).then(() => {
-                    refreshBoardStatus();
-                });
+                sendBattleMovement(currentBattle, movement.from, movement.to).then(refreshBoardStatus);
                 movement = null;
                 $board.find('.selected').removeClass('selected');
             }
@@ -65,13 +63,10 @@ function drawChessboard($board) {
         html += `</tr>`;
     }
 
-    // letter row on bottom:
+    // Letter row on bottom:
     html += `<tr><td></td>`
     for (var col = 0; col < 8; col++) {
-        html += `
-                <td>${letters[col]}</td>
-            `;
-
+        html += `<td>${letters[col]}</td>`;
     }
     html += `</tr>`
 
