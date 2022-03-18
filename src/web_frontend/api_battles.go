@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+const initialBoardStatus = "CHBQKBHCPPPPPPPP              qQ                ppppppppchbqkbhc"
+
 func (s *Server) setupBattlesRoutes() *chi.Mux {
 	challenges := chi.NewRouter()
 	challenges.Get("/{challenge_id}/state", s.getBatleStateHandler)
@@ -20,14 +22,16 @@ func (s *Server) getBatleStateHandler(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement getBatleStateHandler
 	setJSON(rw)
 	fmt.Fprintf(rw, `{
-		"board": "          (XXX 64-chars, one for each pos in board)             ",
-		"turn":"white",
+		"board": "%s",
+		"white_team": "aabbcc-dd-11-33322323232233",
+		"black_team": "9999999ff-12332-23k4234j233",
+		"turn":"black",
 		"latest_movements": [
 			{"n": 5, "who":"user1", "piece":"q", "from": "A5", "to":"C6", "timestamp":"2022-02-22T11:11:11Z"},
 			{"n": 4, "who":"user2", "piece":"P", "from": "A5", "to":"C6", "timestamp":"2022-02-22T11:11:11Z"},
 			{"n": 3, "who":"user6", "piece":"k", "from": "A5", "to":"C6", "timestamp":"2022-02-22T11:11:11Z"}
 		]
-	}`)
+	}`, initialBoardStatus)
 }
 
 func (s *Server) getBatleLogHandler(rw http.ResponseWriter, r *http.Request) {
@@ -46,4 +50,5 @@ func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
 	to := r.FormValue("to")
 	log.Println("XXX move from", from, "to", to) // XXX cleanup log
 	setJSON(rw)
+	fmt.Fprintf(rw, `{}`)
 }

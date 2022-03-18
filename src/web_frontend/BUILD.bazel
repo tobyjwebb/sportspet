@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "api_battles.go",
         "api_challenges.go",
+        "api_sessions.go",
         "api_teams.go",
         "index.go",
         "login.go",
@@ -19,6 +20,9 @@ go_library(
         "html/nick-already-used.html",
         "html/images/team-chess-logo.png",
         "html/css/all.css",
+        "html/battle.html",
+        "html/js/common.js",
+        "html/js/battle.js",
     ],
     importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
     visibility = ["//visibility:public"],

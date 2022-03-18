@@ -1,10 +1,3 @@
-function getSessionID() {
-    var url = window.location.href;
-    var idx = url.lastIndexOf("=")
-    var sessionID = url.substring(idx + 1);
-    return sessionID;
-}
-
 function getAuthHeader() {
     return {
         'Authorization': 'Bearer ' + getSessionID(),
@@ -12,7 +5,6 @@ function getAuthHeader() {
 }
 
 $(function () {
-    var currentTeamID = null;
     var $newTeamName = $('#teams input[name=name]');
     var $currentTeam = $('.current_team');
     var $confirmJoinTeam = $('#btnConfirmJoinTeam');
@@ -176,9 +168,19 @@ $(function () {
     }
 
     $('#incoming-challenges').on('click', 'button', function () {
-        // XXX implement accept challenge button
+        // Accept challenge button
         var challengeID = $(this).data('challenge-id');
-        alert('TODO: Implement accept challenge - ID: ' + challengeID);
+        $.ajax({
+            method: 'post',
+            url: `/api/v1/challenges/${challengeID}/accept`,
+            headers: getAuthHeader(),
+            success: function (res) {
+                // We're not going to need battleID for now, because it's now returned by API
+                // document.location.href = `/battle.html?session=${getSessionID()}&battle=${res.battle_id}`;
+                document.location.href = `/battle.html?session=${getSessionID()}`;
+            }
+        })
+
     })
 
     $('#team_list').on('click', '.watchBattle', function () {

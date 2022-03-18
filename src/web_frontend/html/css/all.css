@@ -26,11 +26,33 @@
     float: right;
 }
 
-html, body.main-page {
+html, body {
     margin: 0;
     padding: 0;
 }
 
-body.main-page {
+body {
     margin-top:55px;
+}
+
+.chessboard td {
+    width: 30pt;
+    height: 30pt;
+    font-size: 200%;
+    text-align: center;
+}
+.chessboard td.white {
+    background: #eee;
+}
+.chessboard td.black {
+    background: lightgrey;
+}
+.chessboard.your-turn td.white:hover,
+.chessboard.your-turn td.black:hover,
+.chessboard.your-turn td.selected {
+    background: red;
+}
+
+#battle_status {
+    text-align: center;
 }
