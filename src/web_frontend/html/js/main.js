@@ -57,9 +57,7 @@ $(function () {
                 owner: getSessionID(),
             },
             success: function (data) {
-                $currentTeam.text(data.name);
-                currentTeamID = data.id;
-                switchView('teamOverview');
+                switchToLobby(data.id, data.name)
             }
         });
     });
@@ -74,6 +72,7 @@ $(function () {
 
     $('#btnRefreshTeamsTable').click(function () {
         refreshTeamsStatus();
+        refreshChallenges();
     });
 
     $('#btnJoinTeam').click(function () {
@@ -111,13 +110,18 @@ $(function () {
             url: `/api/v1/teams/${teamID}/join`,
             headers: getAuthHeader(),
             success: function () {
-                currentTeamID = teamID;
-                $currentTeam.text(teamName);
-                switchView('lobby');
-                refreshTeamsStatus();
+                switchToLobby(teamID, teamName)
             }
         })
-    })
+    });
+
+    function switchToLobby(teamID, teamName) {
+        currentTeamID = teamID;
+        $currentTeam.text(teamName);
+        switchView('lobby');
+        refreshTeamsStatus();
+        refreshChallenges();
+    }
 
     function refreshTeamsStatus() {
         var $teamListTable = $('#team_list tbody');
@@ -149,6 +153,33 @@ $(function () {
             }
         })
     }
+
+    function refreshChallenges() {
+        var $challenges = $('#incoming-challenges');
+        $challenges.hide();
+        $.ajax({
+            url: `/api/v1/challenges`,
+            headers: getAuthHeader(),
+            success: function (challenges) {
+                if (!challenges.length) {
+                    return;
+                }
+                $challenges.find('p span').text(challenges.length);
+                var $list = $challenges.find('ul');
+                $list.html('');
+                challenges.forEach(c => {
+                    $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span> (<span>${c.timestamp}</span> ago)</li>`).appendTo($list)
+                });
+                $challenges.show();
+            }
+        })
+    }
+
+    $('#incoming-challenges').on('click', 'button', function () {
+        // XXX implement accept challenge button
+        var challengeID = $(this).data('challenge-id');
+        alert('TODO: Implement accept challenge - ID: ' + challengeID);
+    })
 
     $('#team_list').on('click', '.watchBattle', function () {
         // XXX implement watch battle button
