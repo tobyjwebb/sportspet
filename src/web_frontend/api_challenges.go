@@ -25,7 +25,7 @@ func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Req
 			"challenger": {
 				"id": "aaabbb-cccc-ffff-11122233",
 				"name": "The Fooers"
-			}
+			},
 			"timestamp": "2000-12-05T12:34:56Z"
 		}
 	]`)

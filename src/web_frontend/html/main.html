@@ -16,7 +16,7 @@
 
         <div class="overview">
             <h3>Teams:</h3>
-            <p>Current team: <span id="current_team">[none]</span></p>
+            <p>Current team: <span class="current_team">[none]</span></p>
 
             <p id="team_btns">
                 <button id="btnCreateTeam">Create team</button>
@@ -46,6 +46,38 @@
             </p>
         </div>
 
+    </div>
+
+    <div id="lobby" class="centerbox" style="display: none">
+        <div class="overview">
+            <p>Current team: <span class="current_team">[none]</span></p>
+
+            <table id="team_list">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Members</th>
+                        <th>Rank</th>
+                        <th>
+                            <button id="btnRefreshTeamsTable">refresh</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- filled in by API data -->
+                </tbody>
+            </table>
+
+            <div id="incoming-challenges">
+                <p>You've received <span>1</span> challenge(s).</p>
+                <ul>
+                    <li>
+                        <button>Accept</button> challenge from <span>TheFooers</span> (<span>10 minutes</span> ago)
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
