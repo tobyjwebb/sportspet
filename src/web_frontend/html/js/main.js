@@ -126,8 +126,8 @@ $(function () {
                     var actionBtn = '';
                     if (team.id == currentTeamID) {
                         actionBtn = '(your team)';
-                    } else if (team.status.battleID) {
-                        actionBtn = `<button class=watchBattle data-battle-id=${team.status.battleID}>Watch battle</button>`;
+                    } else if (team.status.battle_id) {
+                        actionBtn = `<button class=watchBattle data-battle-id=${team.status.battle_id}>Watch battle</button>`;
                     } else {
                         actionBtn = `<button class=challengeTeam data-team-id=${team.id}>Challenge team</button>`;
                     }
@@ -135,8 +135,8 @@ $(function () {
                     $(`
                         <tr>
                             <td>${team.name}</td>
-                            <td>${team.status.status}</td>
-                            <td>${team.members}</td>
+                            <td>${team.status.status ? team.status.status : 'idle'}</td>
+                            <td>${team.members.length}</td>
                             <td>${team.rank ? team.rank : '?'}</td>
                             <td>${actionBtn}</td>
                         </tr>
