@@ -3,7 +3,7 @@ package teams
 type Team struct {
 	ID      string     `json:"id"`
 	Name    string     `json:"name"`
-	Owner   string     `json:"owner,omitempty"` // stored as sessionID?
+	Owner   string     `json:"owner"`
 	Rank    int        `json:"rank"`
 	Status  TeamStatus `json:"status"`
 	Members []string   `json:"members,omitempty"`
