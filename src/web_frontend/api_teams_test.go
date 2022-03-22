@@ -2,6 +2,7 @@ package web_frontend_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -14,7 +15,7 @@ import (
 	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
 
-func TestTeamsHandler(t *testing.T) {
+func TestCreateTeamsHandler(t *testing.T) {
 	type args struct {
 		method         string
 		teamName       string
@@ -84,5 +85,72 @@ func TestTeamsHandler(t *testing.T) {
 				t.Errorf("Got wrong team. Got:\n%v\n\nWant:\n%v\n", gotTeam, tt.wantTeam)
 			}
 		})
+	}
+}
+
+func TestListTeamsHandlerSuccess(t *testing.T) {
+	someTeam := teams.Team{
+		ID:      "someid",
+		Name:    "someName",
+		Owner:   "someowner",
+		Rank:    99,
+		Members: []string{"mem1", "mem2"},
+		Status: teams.TeamStatus{
+			BattleID:  "mybattle",
+			Status:    "myfoostatus",
+			Timestamp: "somets",
+		},
+	}
+	request, err := http.NewRequest(http.MethodGet, "dummy", nil)
+	if err != nil {
+		t.Fatalf("Got error: %v", err)
+	}
+	response := httptest.NewRecorder()
+	server := web_frontend.NewServer(nil)
+	server.TeamService = &teams.TeamServiceMock{
+		ListTeamsFn: func() ([]teams.Team, error) {
+			return []teams.Team{someTeam}, nil
+		},
+	}
+
+	server.ListTeamsHandler(response, request)
+
+	gotStatus := response.Result().StatusCode
+	wantStatus := http.StatusOK
+	if gotStatus != wantStatus {
+		t.Errorf("Got status %d, want %d", gotStatus, wantStatus)
+	}
+
+	var gotTeams []teams.Team
+	gotBytes := response.Body.Bytes()
+	if err := json.Unmarshal(gotBytes, &gotTeams); err != nil {
+		t.Fatalf("Unexpected error decoding result: %v", err)
+	}
+
+	wantTeams := []teams.Team{someTeam}
+	if !reflect.DeepEqual(gotTeams, wantTeams) {
+		t.Errorf("Got wrong team list. Got:\n%v\n\nWant:\n%v\n", gotTeams, wantTeams)
+	}
+}
+
+func TestListTeamsHandlerError(t *testing.T) {
+	request, err := http.NewRequest(http.MethodGet, "dummy", nil)
+	if err != nil {
+		t.Fatalf("Got error: %v", err)
+	}
+	response := httptest.NewRecorder()
+	server := web_frontend.NewServer(nil)
+	server.TeamService = &teams.TeamServiceMock{
+		ListTeamsFn: func() ([]teams.Team, error) {
+			return nil, fmt.Errorf("OhNoSomethingBadHappened")
+		},
+	}
+
+	server.ListTeamsHandler(response, request)
+
+	gotStatus := response.Result().StatusCode
+	wantStatus := http.StatusInternalServerError
+	if gotStatus != wantStatus {
+		t.Errorf("Got status %d, want %d", gotStatus, wantStatus)
 	}
 }
