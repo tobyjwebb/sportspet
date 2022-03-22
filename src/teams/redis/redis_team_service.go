@@ -113,3 +113,7 @@ func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, err
 	}
 	return list, nil
 }
+
+func (r *redisTeamService) JoinTeam(sessionID, teamID string) (*teams.Team, error) {
+	return nil, fmt.Errorf("not implemented")
+}

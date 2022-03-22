@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tobyjwebb/teamchess/src/teams"
 	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
@@ -153,4 +154,52 @@ func TestListTeamsHandlerError(t *testing.T) {
 	if gotStatus != wantStatus {
 		t.Errorf("Got status %d, want %d", gotStatus, wantStatus)
 	}
+}
+
+// func TestJoinTeamsHandlerError(t *testing.T) {
+// }
+
+func TestSpec(t *testing.T) {
+
+	Convey("Given a server", t, func() {
+
+		Convey("Given a request to join a team", func() {
+			sessionID := "mysessionid"
+			teamID := "foo-team-id"
+			url := fmt.Sprintf("/api/v1/teams/%s/join", teamID)
+			request, err := http.NewRequest(http.MethodPost, url, nil)
+			if err != nil {
+				t.Fatalf("Got error: %v", err)
+			}
+			request.Header.Set("Authorization", "Bearer "+sessionID)
+			response := httptest.NewRecorder()
+			server := web_frontend.NewServer(nil)
+
+			Convey("Given a teamservice mock that returns an error", func() {
+				var gotSessionID string
+				var gotTeamID string
+				server.TeamService = &teams.TeamServiceMock{
+					JoinTeamFn: func(sessionID, teamID string) (*teams.Team, error) {
+						gotSessionID, gotTeamID = sessionID, teamID
+						return nil, fmt.Errorf("ohnosomethingbadhappened")
+					},
+				}
+
+				server.JoinTeamHandler(response, request)
+
+				gotStatus := response.Result().StatusCode
+
+				Convey("Then the status code should be internal server error", func() {
+					So(gotStatus, ShouldEqual, http.StatusInternalServerError)
+				})
+
+				Convey("Then arguments to join are the ones set in the request", func() {
+					So(gotSessionID, ShouldEqual, sessionID)
+					So(gotTeamID, ShouldEqual, teamID)
+				})
+			})
+
+		})
+
+	})
 }
