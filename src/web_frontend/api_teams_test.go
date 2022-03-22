@@ -162,6 +162,7 @@ func TestListTeamsHandlerError(t *testing.T) {
 func TestSpec(t *testing.T) {
 
 	Convey("Given a server", t, func() {
+		server := web_frontend.NewServer(nil)
 
 		Convey("Given a request to join a team", func() {
 			sessionID := "mysessionid"
@@ -173,7 +174,6 @@ func TestSpec(t *testing.T) {
 			}
 			request.Header.Set("Authorization", "Bearer "+sessionID)
 			response := httptest.NewRecorder()
-			server := web_frontend.NewServer(nil)
 
 			Convey("Given a teamservice mock that returns an error", func() {
 				var gotSessionID string
@@ -185,21 +185,19 @@ func TestSpec(t *testing.T) {
 					},
 				}
 
-				server.JoinTeamHandler(response, request)
+				Convey("When the handler is called", func() {
+					server.ServeHTTP(response, request)
 
-				gotStatus := response.Result().StatusCode
+					Convey("Then the status code should be internal server error", func() {
+						So(response.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+					})
 
-				Convey("Then the status code should be internal server error", func() {
-					So(gotStatus, ShouldEqual, http.StatusInternalServerError)
-				})
-
-				Convey("Then arguments to join are the ones set in the request", func() {
-					So(gotSessionID, ShouldEqual, sessionID)
-					So(gotTeamID, ShouldEqual, teamID)
+					Convey("Then arguments to join are the ones set in the request", func() {
+						So(gotSessionID, ShouldEqual, sessionID)
+						So(gotTeamID, ShouldEqual, teamID)
+					})
 				})
 			})
-
 		})
-
 	})
 }

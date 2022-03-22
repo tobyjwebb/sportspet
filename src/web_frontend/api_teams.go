@@ -76,9 +76,6 @@ func (s *Server) JoinTeamHandler(rw http.ResponseWriter, r *http.Request) {
 		log.Printf("error joining team: %v", err)
 		return
 	}
-	// XXX implement joinTeam action
-	setJSON(rw)
-	fmt.Fprintf(rw, `{"warning":"not implemented"}`)
 }
 
 func (s *Server) leaveTeam(rw http.ResponseWriter, r *http.Request) {
