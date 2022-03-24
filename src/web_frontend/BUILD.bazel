@@ -54,5 +54,6 @@ go_test(
         ":web_frontend",
         "//src/teams",
         "//src/user/service",
+        "@com_github_smartystreets_goconvey//convey",
     ],
 )

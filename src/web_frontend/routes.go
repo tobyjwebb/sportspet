@@ -2,7 +2,8 @@ package web_frontend
 
 import "github.com/go-chi/chi/v5"
 
-func (s *Server) setupRoutes() {
+func (s *Server) mountHandlers() {
+	s.setupHtmlHandler()
 	s.router.Post("/login", s.LoginHandler)
 	s.router.Mount("/api/v1", s.setupAPIRoutes())
 }

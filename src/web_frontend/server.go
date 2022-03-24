@@ -28,22 +28,25 @@ func NewServer(c *settings.Config) *Server {
 	if config == nil {
 		config = settings.GetConfig()
 	}
-	return &Server{
+	s := &Server{
 		config: *config,
+		router: chi.NewRouter(),
 	}
+	s.mountHandlers()
+	return s
+}
+
+func (s *Server) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	s.router.ServeHTTP(rw, r)
 }
 
 func (s *Server) Start() error {
-	s.router = chi.NewRouter()
-
 	if err := s.initUserService(); err != nil {
 		return fmt.Errorf("could not init user service: %w", err)
 	}
 	if err := s.initTeamService(); err != nil {
 		return fmt.Errorf("could not init team service: %w", err)
 	}
-	s.setupHtmlHandler()
-	s.setupRoutes()
 
 	log.Println("Starting server on", s.config.FrontendAddr)
 	return http.ListenAndServe(s.config.FrontendAddr, s.router)
