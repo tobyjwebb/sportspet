@@ -70,7 +70,7 @@ func getSessionIDFromAuth(r *http.Request) string {
 func (s *Server) JoinTeamHandler(rw http.ResponseWriter, r *http.Request) {
 	sessionID := getSessionIDFromAuth(r)
 	teamIDParam := chi.URLParam(r, "team_id")
-	log.Printf("team id: %q", teamIDParam)
+	// log.Printf("team id: %q", teamIDParam)
 	if _, err := s.TeamService.JoinTeam(sessionID, teamIDParam); err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		log.Printf("error joining team: %v", err)
