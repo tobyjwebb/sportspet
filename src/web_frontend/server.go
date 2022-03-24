@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
+	"github.com/tobyjwebb/teamchess/src/challenges"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	"github.com/tobyjwebb/teamchess/src/teams"
 	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
@@ -16,11 +17,12 @@ import (
 )
 
 type Server struct {
-	config      settings.Config
-	UserService user_service.UserService
-	TeamService teams.TeamService
-	redisClient *redis.Client
-	router      *chi.Mux
+	config           settings.Config
+	UserService      user_service.UserService
+	TeamService      teams.TeamService
+	ChallengeService challenges.ChallengeService
+	redisClient      *redis.Client
+	router           *chi.Mux
 }
 
 func NewServer(c *settings.Config) *Server {

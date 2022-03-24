@@ -11,6 +11,7 @@ go_library(
         "login.go",
         "routes.go",
         "server.go",
+        "utils.go",
     ],
     embedsrcs = [
         "html/index.html",
@@ -27,6 +28,7 @@ go_library(
     importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
     visibility = ["//visibility:public"],
     deps = [
+        "//src/challenges",
         "//src/settings",
         "//src/teams",
         "//src/teams/redis",
@@ -47,11 +49,13 @@ genrule(
 go_test(
     name = "web_frontend_test",
     srcs = [
+        "api_challenges_test.go",
         "api_teams_test.go",
         "login_test.go",
     ],
     deps = [
         ":web_frontend",
+        "//src/challenges",
         "//src/teams",
         "//src/user/service",
         "@com_github_smartystreets_goconvey//convey",

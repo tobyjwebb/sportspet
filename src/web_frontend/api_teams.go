@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/tobyjwebb/teamchess/src/teams"
@@ -56,15 +55,6 @@ func (s *Server) CreateTeamHandler(rw http.ResponseWriter, r *http.Request) {
 	if err := encoder.Encode(team); err != nil {
 		panic(err)
 	}
-}
-
-func getSessionIDFromAuth(r *http.Request) string {
-	authHeader := r.Header.Get("Authorization")
-	authSplit := strings.Split(authHeader, " ")
-	if len(authSplit) != 2 || authSplit[0] != "Bearer" {
-		return ""
-	}
-	return authSplit[1]
 }
 
 func (s *Server) JoinTeamHandler(rw http.ResponseWriter, r *http.Request) {

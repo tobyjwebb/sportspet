@@ -32,9 +32,16 @@ func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Req
 }
 
 func (s *Server) CreateChallengeHandler(rw http.ResponseWriter, r *http.Request) {
+	sessionID := getSessionIDFromAuth(r)
+	if sessionID == "" {
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	rw.WriteHeader(http.StatusInternalServerError)
+
 	// XXX implement CreateChallengeHandler
-	setJSON(rw)
-	fmt.Fprintf(rw, `{"id":"aaabbb-cccc-ffff-11122233"}`)
+	// setJSON(rw)
+	// fmt.Fprintf(rw, `{"id":"aaabbb-cccc-ffff-11122233"}`)
 }
 
 func (s *Server) AcceptChallengeHandler(rw http.ResponseWriter, r *http.Request) {
