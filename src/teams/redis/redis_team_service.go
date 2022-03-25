@@ -79,7 +79,7 @@ func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
 	}
 
 	for _, id := range teamIDsList {
-		if team, err := r.getTeamData(id); err != nil {
+		if team, err := r.GetTeamData(id); err != nil {
 			return nil, fmt.Errorf("could not obtain data for team %s: %w", id, err)
 		} else {
 			teamsList = append(teamsList, *team)
@@ -88,7 +88,7 @@ func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
 	return teamsList, nil
 }
 
-func (r *redisTeamService) getTeamData(id string) (*teams.Team, error) {
+func (r *redisTeamService) GetTeamData(id string) (*teams.Team, error) {
 	t := &teams.Team{
 		ID:     id,
 		Status: teams.TeamStatus{},
@@ -126,5 +126,20 @@ func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, err
 }
 
 func (r *redisTeamService) JoinTeam(sessionID, teamID string) (*teams.Team, error) {
-	return nil, fmt.Errorf("not implemented") // XXX implement JOIN TEAM!!!
+	sess, err := r.sessionService.GetSession(sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("could not obtain session: %w", err)
+	}
+
+	_, err = r.client.RPush(ctx, fmt.Sprintf(teamMembersKey, teamID), sessionID).Result()
+	if err != nil {
+		return nil, fmt.Errorf("could not update team member list: %w", err)
+	}
+
+	sess.TeamID = teamID
+	if err := r.sessionService.Update(sess); err != nil {
+		return nil, fmt.Errorf("could not not update session: %w", err)
+	}
+
+	return r.GetTeamData(teamID)
 }
