@@ -19,5 +19,6 @@ go_test(
         ":redis",
         "//src/test",
         "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_smartystreets_goconvey//convey",
     ],
 )

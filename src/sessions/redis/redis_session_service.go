@@ -9,7 +9,10 @@ import (
 	"github.com/tobyjwebb/teamchess/src/sessions"
 )
 
-const sessionsKey = "sessions"
+const (
+	sessionsKey           = "sessions" // map of nick->sessionID
+	sessionPropertiesTplt = "sessions:%s:properties"
+)
 
 var ctx = context.Background()
 
@@ -31,6 +34,10 @@ func (r *redisSessionService) Login(nick string) (sessionID string, err error) {
 		if err != nil {
 			return "", err
 		}
+		// Create the session properties hash:
+		if err := r.Update(&sessions.Session{ID: sessionID}); err != nil {
+			return "", err
+		}
 	} else if err != nil {
 		return "", err
 	} else {
@@ -40,9 +47,19 @@ func (r *redisSessionService) Login(nick string) (sessionID string, err error) {
 }
 
 func (s *redisSessionService) GetSession(id string) (*sessions.Session, error) {
-	return nil, fmt.Errorf("GetSession: not implemented!")
+	sess := &sessions.Session{ID: id}
+	if teamID, err := s.client.HGet(ctx, fmt.Sprintf(sessionPropertiesTplt, id), "team-id").Result(); err != nil {
+		return nil, fmt.Errorf("could not obtain session data: %w", err)
+	} else {
+		sess.TeamID = teamID
+	}
+
+	return sess, nil
 }
 
 func (s *redisSessionService) Update(session *sessions.Session) error {
-	return fmt.Errorf("Update: not implemented!")
+	if _, err := s.client.HSet(ctx, fmt.Sprintf(sessionPropertiesTplt, session.ID), "team-id", session.TeamID).Result(); err != nil {
+		return fmt.Errorf("could not update session data: %w", err)
+	}
+	return nil
 }
