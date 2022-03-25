@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	user_service "github.com/tobyjwebb/teamchess/src/user/service"
+	session_service "github.com/tobyjwebb/teamchess/src/sessions"
 	"github.com/tobyjwebb/teamchess/src/web_frontend"
 )
 
@@ -18,19 +18,19 @@ func TestLoginHandler(t *testing.T) {
 		user   string
 	}
 	tests := []struct {
-		name         string
-		args         args
-		userService  user_service.UserService
-		wantStatus   int
-		wantLocation string
+		name           string
+		args           args
+		sessionService session_service.SessionService
+		wantStatus     int
+		wantLocation   string
 	}{
 		{
-			"Post login returns Redirect with session returned from UserService",
+			"Post login returns Redirect with session returned from SessionService",
 			args{
 				method: http.MethodPost,
 				user:   "myname",
 			},
-			&user_service.UserServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
+			&session_service.SessionServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
 				if nick != "myname" {
 					t.Errorf("Unexpected name received: %s", nick)
 				}
@@ -45,7 +45,7 @@ func TestLoginHandler(t *testing.T) {
 				method: http.MethodPost,
 				user:   "myname2",
 			},
-			&user_service.UserServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
+			&session_service.SessionServiceMock{LoginFn: func(nick string) (sessionID string, err error) {
 				if nick != "myname2" {
 					t.Errorf("Unexpected name received: %s", nick)
 				}
@@ -85,7 +85,7 @@ func TestLoginHandler(t *testing.T) {
 			}
 			response := httptest.NewRecorder()
 			server := web_frontend.NewServer(nil)
-			server.UserService = tt.userService
+			server.SessionService = tt.sessionService
 
 			server.LoginHandler(response, request)
 

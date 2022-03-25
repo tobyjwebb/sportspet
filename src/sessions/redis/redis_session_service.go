@@ -11,16 +11,16 @@ const sessionsKey = "sessions"
 
 var ctx = context.Background()
 
-func New(client *redis.Client) (*redisUserService, error) {
+func New(client *redis.Client) (*redisSessionService, error) {
 
-	return &redisUserService{client: client}, nil
+	return &redisSessionService{client: client}, nil
 }
 
-type redisUserService struct {
+type redisSessionService struct {
 	client *redis.Client
 }
 
-func (r *redisUserService) Login(nick string) (sessionID string, err error) {
+func (r *redisSessionService) Login(nick string) (sessionID string, err error) {
 	_, err = r.client.HGet(ctx, sessionsKey, nick).Result()
 	if err == redis.Nil {
 		// Create and store new sessionid

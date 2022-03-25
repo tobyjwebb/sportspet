@@ -9,16 +9,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/challenges"
+	session_service "github.com/tobyjwebb/teamchess/src/sessions"
+	redis_session_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	"github.com/tobyjwebb/teamchess/src/teams"
 	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
-	user_service "github.com/tobyjwebb/teamchess/src/user/service"
-	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
 type Server struct {
 	config           settings.Config
-	UserService      user_service.UserService
+	SessionService   session_service.SessionService
 	TeamService      teams.TeamService
 	ChallengeService challenges.ChallengeService
 	redisClient      *redis.Client
@@ -43,7 +43,7 @@ func (s *Server) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Start() error {
-	if err := s.initUserService(); err != nil {
+	if err := s.initSessionService(); err != nil {
 		return fmt.Errorf("could not init user service: %w", err)
 	}
 	if err := s.initTeamService(); err != nil {
@@ -54,19 +54,19 @@ func (s *Server) Start() error {
 	return http.ListenAndServe(s.config.FrontendAddr, s.router)
 }
 
-func (s *Server) initUserService() error {
-	if s.UserService != nil {
+func (s *Server) initSessionService() error {
+	if s.SessionService != nil {
 		return nil
 	}
 	client, err := s.getRedisClient()
 	if err != nil {
 		return fmt.Errorf("could not init Redis client: %w", err)
 	}
-	redisUserService, err := redis_user_service.New(client)
+	redisSessionService, err := redis_session_service.New(client)
 	if err != nil {
 		return fmt.Errorf("could not init Redis user service: %w", err)
 	}
-	s.UserService = redisUserService
+	s.SessionService = redisSessionService
 	return nil
 }
 

@@ -51,15 +51,22 @@ func TestChallengeTeamHandler(t *testing.T) {
 
 				})
 
-				// Convey("Given a mock that returns success", func() {
+				Convey("Given a mock that returns success", func() {
+					theChallengeID := "the-expected-challenge-id"
 
-				// 	Convey("When the challenge request is sent", func() {
+					Convey("When the challenge request is sent", func() {
+						server.ServeHTTP(response, request)
 
-				// 		Convey("Then created challenge-id is returned", nil)
+						Convey("Then created challenge-id is returned", func() {
+							So(response.Result().StatusCode, ShouldEqual, http.StatusOK)
+							So(response.Result().Body, ShouldEqualJSON, map[string]string{
+								"id": theChallengeID,
+							})
+						})
 
-				// 	})
+					})
 
-				// })
+				})
 
 			})
 

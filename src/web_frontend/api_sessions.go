@@ -9,7 +9,7 @@ import (
 
 func (s *Server) setupSessionsRoutes() *chi.Mux {
 	sessions := chi.NewRouter()
-	sessions.Get("/{challenge_id}", s.getSessionHandler)
+	sessions.Get("/me", s.getSessionHandler)
 	return sessions
 }
 

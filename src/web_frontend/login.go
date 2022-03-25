@@ -15,7 +15,7 @@ func (s *Server) LoginHandler(rw http.ResponseWriter, r *http.Request) {
 	if nick == "" {
 		url = "/nick-required.html"
 	} else {
-		sessionID, err := s.UserService.Login(nick)
+		sessionID, err := s.SessionService.Login(nick)
 		if err != nil {
 			panic(err)
 		}

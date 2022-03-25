@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/go-redis/redis/v8"
+	redis_user_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/test"
-	redis_user_service "github.com/tobyjwebb/teamchess/src/user/service/redis"
 )
 
-func TestRedisUserService_Login(t *testing.T) {
+func TestRedisSessionService_Login(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test")
 	}
