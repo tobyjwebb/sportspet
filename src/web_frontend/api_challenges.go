@@ -1,10 +1,13 @@
 package web_frontend
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/tobyjwebb/teamchess/src/challenges"
 )
 
 func (s *Server) setupChallengesRoutes() *chi.Mux {
@@ -17,7 +20,6 @@ func (s *Server) setupChallengesRoutes() *chi.Mux {
 
 func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement getSessionChallengesHandler
-	// XXX Requires Bearer token
 	setJSON(rw)
 	fmt.Fprintf(rw, `[
 		{
@@ -37,15 +39,48 @@ func (s *Server) CreateChallengeHandler(rw http.ResponseWriter, r *http.Request)
 		rw.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	rw.WriteHeader(http.StatusInternalServerError)
+	challengedTeamID := r.FormValue("team")
+	if challengedTeamID == "" {
+		log.Println("Missing [team] url parameter")
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	// XXX implement CreateChallengeHandler
-	// setJSON(rw)
-	// fmt.Fprintf(rw, `{"id":"aaabbb-cccc-ffff-11122233"}`)
+	session, err := s.SessionService.GetSession(sessionID)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if session.TeamID == "" {
+		log.Println("Session", sessionID, "has not joined a team yet")
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	challenge := &challenges.Challenge{
+		ChallengerTeamID: session.TeamID,
+		ChallengeeTeamID: challengedTeamID,
+	}
+	if err := s.ChallengeService.Create(challenge); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	setJSON(rw)
+	if err := json.NewEncoder(rw).Encode(&createChallengeResponse{
+		ID: challenge.ID,
+	}); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (s *Server) AcceptChallengeHandler(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement AcceptChallengeHandler
 	setJSON(rw)
 	fmt.Fprintf(rw, `{"battle_id":"aaabbb-cccc-ffff-11122233"}`)
+}
+
+type createChallengeResponse struct {
+	ID string `json:"id"`
 }

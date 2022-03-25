@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/tobyjwebb/teamchess/src/sessions"
 	"github.com/tobyjwebb/teamchess/src/teams"
 )
 
@@ -24,7 +25,7 @@ const (
 
 var ctx = context.Background()
 
-func New(client *redis.Client) (*redisTeamService, error) {
+func New(client *redis.Client, sessionService sessions.SessionService) (*redisTeamService, error) {
 	return &redisTeamService{client: client}, nil
 }
 

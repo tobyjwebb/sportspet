@@ -2,9 +2,11 @@ package redis
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/tobyjwebb/teamchess/src/sessions"
 )
 
 const sessionsKey = "sessions"
@@ -35,4 +37,12 @@ func (r *redisSessionService) Login(nick string) (sessionID string, err error) {
 		return "", nil
 	}
 	return
+}
+
+func (s *redisSessionService) GetSession(id string) (*sessions.Session, error) {
+	return nil, fmt.Errorf("GetSession: not implemented!")
+}
+
+func (s *redisSessionService) Update(session *sessions.Session) error {
+	return fmt.Errorf("Update: not implemented!")
 }

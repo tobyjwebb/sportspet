@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/tobyjwebb/teamchess/src/sessions"
 	"github.com/tobyjwebb/teamchess/src/teams"
 	redis_team_service "github.com/tobyjwebb/teamchess/src/teams/redis"
 	"github.com/tobyjwebb/teamchess/src/test"
@@ -27,7 +28,7 @@ func TestRedisTeamsService_CreateTeam(t *testing.T) {
 		Addr: redisContainer.Addr,
 	})
 
-	r, err := redis_team_service.New(client)
+	r, err := redis_team_service.New(client, &sessions.SessionServiceMock{})
 	if err != nil {
 		t.Fatalf("Could not get Redis Team Service: %v", err)
 	}
@@ -60,7 +61,7 @@ func TestRedisTeamsService_ListTeams(t *testing.T) {
 		Addr: redisContainer.Addr,
 	})
 
-	r, err := redis_team_service.New(client)
+	r, err := redis_team_service.New(client, &sessions.SessionServiceMock{})
 	if err != nil {
 		t.Fatalf("Could not get Redis Team Service: %v", err)
 	}

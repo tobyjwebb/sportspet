@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-redis/redis/v8"
-	redis_user_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
+	redis_session_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/test"
 )
 
@@ -25,7 +25,7 @@ func TestRedisSessionService_Login(t *testing.T) {
 		Addr: redisContainer.Addr,
 	})
 
-	r, err := redis_user_service.New(client)
+	r, err := redis_session_service.New(client)
 	if err != nil {
 		t.Fatalf("Could not get Redis User Service: %v", err)
 	}

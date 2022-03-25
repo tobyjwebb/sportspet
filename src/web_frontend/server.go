@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/challenges"
+	"github.com/tobyjwebb/teamchess/src/sessions"
 	session_service "github.com/tobyjwebb/teamchess/src/sessions"
 	redis_session_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/settings"
@@ -46,7 +47,7 @@ func (s *Server) Start() error {
 	if err := s.initSessionService(); err != nil {
 		return fmt.Errorf("could not init user service: %w", err)
 	}
-	if err := s.initTeamService(); err != nil {
+	if err := s.initTeamService(s.SessionService); err != nil {
 		return fmt.Errorf("could not init team service: %w", err)
 	}
 
@@ -70,7 +71,7 @@ func (s *Server) initSessionService() error {
 	return nil
 }
 
-func (s *Server) initTeamService() error {
+func (s *Server) initTeamService(sessionService sessions.SessionService) error {
 	if s.TeamService != nil {
 		return nil
 	}
@@ -78,7 +79,7 @@ func (s *Server) initTeamService() error {
 	if err != nil {
 		return fmt.Errorf("could not init Redis client: %w", err)
 	}
-	redisTeamService, err := redis_team_service.New(client)
+	redisTeamService, err := redis_team_service.New(client, sessionService)
 	if err != nil {
 		return fmt.Errorf("could not init Redis team service: %w", err)
 	}
