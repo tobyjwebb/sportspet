@@ -10,7 +10,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/challenges"
 	"github.com/tobyjwebb/teamchess/src/sessions"
-	session_service "github.com/tobyjwebb/teamchess/src/sessions"
 	redis_session_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/settings"
 	"github.com/tobyjwebb/teamchess/src/teams"
@@ -19,7 +18,7 @@ import (
 
 type Server struct {
 	config           settings.Config
-	SessionService   session_service.SessionService
+	SessionService   sessions.SessionService
 	TeamService      teams.TeamService
 	ChallengeService challenges.ChallengeService
 	redisClient      *redis.Client

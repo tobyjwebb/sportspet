@@ -16,6 +16,16 @@ func TestRedisTeamsService_CreateTeam(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test")
 	}
+	mockSessionService := &sessions.SessionServiceMock{}
+	var gotGetSessionIDParam, gotUpdateSessionNewTeamID string
+	mockSessionService.GetSessionFn = func(id string) (*sessions.Session, error) {
+		gotGetSessionIDParam = id
+		return &sessions.Session{}, nil
+	}
+	mockSessionService.UpdateFn = func(s *sessions.Session) error {
+		gotUpdateSessionNewTeamID = s.TeamID
+		return nil
+	}
 
 	ctx := context.Background()
 
@@ -28,20 +38,29 @@ func TestRedisTeamsService_CreateTeam(t *testing.T) {
 		Addr: redisContainer.Addr,
 	})
 
-	r, err := redis_team_service.New(client, &sessions.SessionServiceMock{})
+	r, err := redis_team_service.New(client, mockSessionService)
 	if err != nil {
 		t.Fatalf("Could not get Redis Team Service: %v", err)
 	}
 
-	team := &teams.Team{}
+	sessionID := "test-session-id"
+	team := &teams.Team{Owner: sessionID}
 	gotErr := r.CreateTeam(team)
 
 	if gotErr != nil {
 		t.Errorf("Got unexpected error: %v", gotErr)
 	}
 
+	if gotGetSessionIDParam != sessionID {
+		t.Errorf("got wrong session ID param: %q, want %q", gotGetSessionIDParam, sessionID)
+	}
+
 	if team.ID == "" {
 		t.Errorf("Team ID has not been initialized")
+	}
+
+	if gotUpdateSessionNewTeamID != team.ID {
+		t.Errorf("got wrong new team ID in UpdateSession: %q, want %q", gotUpdateSessionNewTeamID, team.ID)
 	}
 }
 
@@ -49,6 +68,13 @@ func TestRedisTeamsService_ListTeams(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test")
 	}
+	mockSessionService := &sessions.SessionServiceMock{}
+	mockSessionService.GetSessionFn = func(id string) (*sessions.Session, error) {
+		return &sessions.Session{}, nil
+	}
+	mockSessionService.UpdateFn = func(s *sessions.Session) error {
+		return nil
+	}
 
 	ctx := context.Background()
 
@@ -61,7 +87,7 @@ func TestRedisTeamsService_ListTeams(t *testing.T) {
 		Addr: redisContainer.Addr,
 	})
 
-	r, err := redis_team_service.New(client, &sessions.SessionServiceMock{})
+	r, err := redis_team_service.New(client, mockSessionService)
 	if err != nil {
 		t.Fatalf("Could not get Redis Team Service: %v", err)
 	}

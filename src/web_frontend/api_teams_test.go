@@ -157,7 +157,6 @@ func TestListTeamsHandlerError(t *testing.T) {
 }
 
 func TestJoinTeamHandler(t *testing.T) {
-
 	Convey("Given a server", t, func() {
 		server := web_frontend.NewServer(nil)
 

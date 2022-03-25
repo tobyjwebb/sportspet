@@ -26,11 +26,12 @@ const (
 var ctx = context.Background()
 
 func New(client *redis.Client, sessionService sessions.SessionService) (*redisTeamService, error) {
-	return &redisTeamService{client: client}, nil
+	return &redisTeamService{client: client, sessionService: sessionService}, nil
 }
 
 type redisTeamService struct {
-	client *redis.Client
+	client         *redis.Client
+	sessionService sessions.SessionService
 }
 
 func (r *redisTeamService) CreateTeam(team *teams.Team) error {
@@ -58,6 +59,15 @@ func (r *redisTeamService) CreateTeam(team *teams.Team) error {
 		}
 	}
 	team.ID = newTeamID
+	if s, err := r.sessionService.GetSession(team.Owner); err != nil {
+		return err
+	} else {
+		s.TeamID = newTeamID
+		if err := r.sessionService.Update(s); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -116,5 +126,5 @@ func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, err
 }
 
 func (r *redisTeamService) JoinTeam(sessionID, teamID string) (*teams.Team, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, fmt.Errorf("not implemented") // XXX implement JOIN TEAM!!!
 }
