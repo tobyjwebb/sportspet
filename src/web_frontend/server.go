@@ -49,6 +49,9 @@ func (s *Server) Start() error {
 	if err := s.initTeamService(s.SessionService); err != nil {
 		return fmt.Errorf("could not init team service: %w", err)
 	}
+	if err := s.initChallengeService(); err != nil {
+		return fmt.Errorf("could not init challenge service: %w", err)
+	}
 
 	log.Println("Starting server on", s.config.FrontendAddr)
 	return http.ListenAndServe(s.config.FrontendAddr, s.router)
@@ -67,6 +70,19 @@ func (s *Server) initSessionService() error {
 		return fmt.Errorf("could not init Redis user service: %w", err)
 	}
 	s.SessionService = redisSessionService
+	return nil
+}
+
+func (s *Server) initChallengeService() error {
+	// XXX This is Mocked! - replace for real service
+	s.ChallengeService = &challenges.ChallengeServiceMock{
+		CreateFn: func(challenge *challenges.Challenge) error {
+			return nil
+		},
+		ListFn: func(teamID string) ([]challenges.Challenge, error) {
+			return []challenges.Challenge{}, nil
+		},
+	}
 	return nil
 }
 
