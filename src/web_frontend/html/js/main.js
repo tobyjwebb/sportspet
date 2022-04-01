@@ -1,9 +1,3 @@
-function getAuthHeader() {
-    return {
-        'Authorization': 'Bearer ' + getSessionID(),
-    };
-}
-
 $(function () {
     var $newTeamName = $('#teams input[name=name]');
     var $currentTeam = $('.current_team');
@@ -190,9 +184,10 @@ $(function () {
     })
 
     $('#team_list').on('click', '.challengeTeam', function () {
-        // XXX implement challenge team button
         var teamID = $(this).data('team-id');
-        alert('TODO: Implement challenge team - ID: ' + teamID);
+        challengeTeam(teamID).then(() => {
+            alert('Challenge sent.');
+        });
     })
 
 });

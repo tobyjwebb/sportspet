@@ -9,11 +9,17 @@ function getSessionID() {
     return sessionID;
 }
 
+function getAuthHeader() {
+    return {
+        'Authorization': 'Bearer ' + getSessionID(),
+    };
+}
+
 function getSessionStatus() {
-    var sessionID = getSessionID();
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: `/api/v1/sessions/${sessionID}`,
+            url: `/api/v1/sessions/me`,
+            headers: getAuthHeader(),
             success: function (res) {
                 currentBattle = res.battle;
                 if (res.team) {
@@ -51,6 +57,20 @@ function sendBattleMovement(battleID, from, to) {
             data: { from, to },
             success: function (res) {
                 resolve(res);
+            },
+            error: reject
+        });
+    });
+}
+
+function challengeTeam(teamID) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: 'post',
+            headers: getAuthHeader(),
+            url: `/api/v1/challenges?team=${teamID}`,
+            success: function () {
+                resolve();
             },
             error: reject
         });
