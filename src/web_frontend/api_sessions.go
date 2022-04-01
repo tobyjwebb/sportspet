@@ -24,15 +24,14 @@ func (s *Server) getSessionHandler(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	res := sessionResponse{
-		// Battle: session.BattleID, // XXX Get from Team Data
-	}
+	res := sessionResponse{}
 	if session.TeamID != "" {
 		team, err := s.TeamService.GetTeamData(session.TeamID)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		res.Battle = team.Status.BattleID
 		res.Team = sessionTeamResponse{
 			ID:   team.ID,
 			Name: team.Name,
