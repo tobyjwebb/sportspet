@@ -82,17 +82,48 @@ func TestChallengeService_List(t *testing.T) {
 		})
 
 		Convey("Given a challenge", func() {
-			c := &challenges.Challenge{}
+			challengerID := "testChallenger"
+			challengeeID := "testChallengee"
+			c := &challenges.Challenge{
+				ChallengerTeamID: challengerID,
+				ChallengeeTeamID: challengeeID,
+			}
 			err := r.Create(c)
 			Convey("No error", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("When List is called", func() {
-				list, err := r.List("")
+			Convey("When List is called for the challenger team", func() {
+				list, err := r.List(challengerID)
 
-				Convey("The result is not empty", func() {
+				Convey("The result is not empty, and should return the new challenge", func() {
 					So(list, ShouldNotBeEmpty)
+					found := findChallengIDInList(list, c.ID)
+					So(found, ShouldBeTrue)
+				})
+				Convey("There is no error", func() {
+					So(err, ShouldBeNil)
+				})
+			})
+
+			Convey("When List is called for the challengee team", func() {
+				list, err := r.List(challengeeID)
+
+				Convey("The result is not empty, and should return the new challenge", func() {
+					So(list, ShouldNotBeEmpty)
+					found := findChallengIDInList(list, c.ID)
+					So(found, ShouldBeTrue)
+				})
+				Convey("There is no error", func() {
+					So(err, ShouldBeNil)
+				})
+			})
+
+			Convey("When List is called for another team", func() {
+				list, err := r.List("foo-team")
+
+				Convey("The result is empty", func() {
+					So(list, ShouldBeEmpty)
 				})
 				Convey("There is no error", func() {
 					So(err, ShouldBeNil)
@@ -100,4 +131,13 @@ func TestChallengeService_List(t *testing.T) {
 			})
 		})
 	})
+}
+
+func findChallengIDInList(list []challenges.Challenge, id string) bool {
+	for _, c := range list {
+		if c.ID == id {
+			return true
+		}
+	}
+	return false
 }

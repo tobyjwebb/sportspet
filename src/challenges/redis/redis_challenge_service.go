@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	teamChallengesKey      = "challenges:team:%s"
-	challengePropertiesKey = "challenges:%s:properties"
-	challengerKey          = "challenger"
-	challengeeKey          = "challengee"
+	teamChallengesKey = "challenges:team:%s"
+	// challengePropertiesKey = "challenges:%s:properties"
+	// challengerKey          = "challenger"
+	// challengeeKey          = "challengee"
 )
 
 var ctx = context.Background()
@@ -117,7 +117,3 @@ func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, err
 	}
 	return list, nil
 }
-
-// func (r *redisChallengeService) JoinChallenge(sessionID, challengeID string) (*challenges.Challenge, error) {
-// 	return nil, fmt.Errorf("not implemented")
-// }
