@@ -3,5 +3,6 @@ package sessions
 type Session struct {
 	ID string
 	// Nick   string
-	TeamID string
+	TeamID   string
+	BattleID string
 }

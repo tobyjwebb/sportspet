@@ -1,7 +1,7 @@
 package web_frontend
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -14,13 +14,42 @@ func (s *Server) setupSessionsRoutes() *chi.Mux {
 }
 
 func (s *Server) getSessionHandler(rw http.ResponseWriter, r *http.Request) {
-	// XXX implement getSessionHandler
-	setJSON(rw)
-	fmt.Fprintf(rw, `{
-		"battle": "aabbcc-dd-11-33322323232233",
-		"team": {
-			"id": "9999999ff-12332-23k4234j233",
-			"name": "Qux"
+	sessionID := getSessionIDFromAuth(r)
+	if sessionID == "" {
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	session, err := s.SessionService.GetSession(sessionID)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	res := sessionResponse{
+		Battle: session.BattleID,
+	}
+	if session.TeamID != "" {
+		team, err := s.TeamService.GetTeamData(session.TeamID)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-	}`)
+		res.Team = sessionTeamResponse{
+			ID:   team.ID,
+			Name: team.Name,
+		}
+	}
+	setJSON(rw)
+	if err := json.NewEncoder(rw).Encode(res); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+type sessionResponse struct {
+	Battle string              `json:"battle"`
+	Team   sessionTeamResponse `json:"team"`
+}
+type sessionTeamResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
