@@ -51,13 +51,13 @@ func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Req
 	}
 
 	// Fill in the team names:
-	for _, c := range res {
+	for i, c := range res {
 		team, err := s.TeamService.GetTeamData(c.Challenger.ID)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		c.Challenger.Name = team.Name
+		res[i].Challenger.Name = team.Name
 	}
 	setJSON(rw)
 	if err := json.NewEncoder(rw).Encode(res); err != nil {
