@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
 	"github.com/tobyjwebb/teamchess/src/challenges"
+	redis_challenge_service "github.com/tobyjwebb/teamchess/src/challenges/redis"
 	"github.com/tobyjwebb/teamchess/src/sessions"
 	redis_session_service "github.com/tobyjwebb/teamchess/src/sessions/redis"
 	"github.com/tobyjwebb/teamchess/src/settings"
@@ -74,15 +75,18 @@ func (s *Server) initSessionService() error {
 }
 
 func (s *Server) initChallengeService() error {
-	// XXX This is Mocked! - replace for real service
-	s.ChallengeService = &challenges.ChallengeServiceMock{
-		CreateFn: func(challenge *challenges.Challenge) error {
-			return nil
-		},
-		ListFn: func(teamID string) ([]challenges.Challenge, error) {
-			return []challenges.Challenge{}, nil
-		},
+	if s.ChallengeService != nil {
+		return nil
 	}
+	client, err := s.getRedisClient()
+	if err != nil {
+		return fmt.Errorf("could not init Redis client: %w", err)
+	}
+	redisChallengeService, err := redis_challenge_service.New(client)
+	if err != nil {
+		return fmt.Errorf("could not init Redis challenge service: %w", err)
+	}
+	s.ChallengeService = redisChallengeService
 	return nil
 }
 

@@ -19,18 +19,62 @@ func (s *Server) setupChallengesRoutes() *chi.Mux {
 }
 
 func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Request) {
-	// XXX implement getSessionChallengesHandler
-	setJSON(rw)
-	fmt.Fprintf(rw, `[
-		{
-			"id": "aaabbb-cccc-ffff-11122233",
-			"challenger": {
-				"id": "aaabbb-cccc-ffff-11122233",
-				"name": "The Fooers"
-			},
-			"timestamp": "2000-12-05T12:34:56Z"
+	sessionID := getSessionIDFromAuth(r)
+	if sessionID == "" {
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	session, err := s.SessionService.GetSession(sessionID)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	res := []challengeResponse{}
+	if session.TeamID != "" {
+		challenges, err := s.ChallengeService.List(session.TeamID)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-	]`)
+		for _, c := range challenges {
+			// Check that we are not the challengers:
+			if c.ChallengerTeamID != session.TeamID {
+				res = append(res, challengeResponse{
+					ID:        c.ID,
+					Timestamp: "2000-12-05T12:34:56Z", // TODO implement
+					Challenger: challengeChallengerResponse{
+						ID: c.ChallengerTeamID,
+					},
+				})
+			}
+		}
+	}
+
+	// Fill in the team names:
+	for _, c := range res {
+		team, err := s.TeamService.GetTeamData(c.Challenger.ID)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		c.Challenger.Name = team.Name
+	}
+	setJSON(rw)
+	if err := json.NewEncoder(rw).Encode(res); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+type challengeResponse struct {
+	ID         string                      `json:"id"`
+	Challenger challengeChallengerResponse `json:"challenger"`
+	Timestamp  string
+}
+
+type challengeChallengerResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 func (s *Server) CreateChallengeHandler(rw http.ResponseWriter, r *http.Request) {

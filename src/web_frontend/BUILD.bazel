@@ -29,6 +29,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//src/challenges",
+        "//src/challenges/redis",
         "//src/sessions",
         "//src/sessions/redis",
         "//src/settings",

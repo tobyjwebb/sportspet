@@ -3,9 +3,10 @@ package teams
 import "fmt"
 
 type TeamServiceMock struct {
-	CreateTeamFn func(*Team) error
-	ListTeamsFn  func() ([]Team, error)
-	JoinTeamFn   func(sessionID, teamID string) (*Team, error)
+	CreateTeamFn  func(*Team) error
+	ListTeamsFn   func() ([]Team, error)
+	JoinTeamFn    func(sessionID, teamID string) (*Team, error)
+	GetTeamDataFn func(id string) (*Team, error)
 }
 
 func (t *TeamServiceMock) CreateTeam(team *Team) error {
@@ -27,4 +28,8 @@ func (t *TeamServiceMock) JoinTeam(sessionID, teamID string) (*Team, error) {
 		return t.JoinTeamFn(sessionID, teamID)
 	}
 	return nil, fmt.Errorf("JoinTeamFn has not been defined")
+}
+
+func (t *TeamServiceMock) GetTeamData(id string) (*Team, error) {
+	return t.GetTeamDataFn(id)
 }
