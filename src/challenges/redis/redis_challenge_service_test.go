@@ -98,8 +98,12 @@ func TestChallengeService_List(t *testing.T) {
 
 				Convey("The result is not empty, and should return the new challenge", func() {
 					So(list, ShouldNotBeEmpty)
-					found := findChallengIDInList(list, c.ID)
-					So(found, ShouldBeTrue)
+					challenge := findChallengeByID(list, c.ID)
+					So(challenge, ShouldNotBeNil)
+					Convey("The challenger fields are as expected", func() {
+						So(challenge.ChallengerTeamID, ShouldEqual, challengerID)
+						So(challenge.ChallengeeTeamID, ShouldEqual, challengeeID)
+					})
 				})
 				Convey("There is no error", func() {
 					So(err, ShouldBeNil)
@@ -111,8 +115,12 @@ func TestChallengeService_List(t *testing.T) {
 
 				Convey("The result is not empty, and should return the new challenge", func() {
 					So(list, ShouldNotBeEmpty)
-					found := findChallengIDInList(list, c.ID)
-					So(found, ShouldBeTrue)
+					challenge := findChallengeByID(list, c.ID)
+					So(challenge, ShouldNotBeNil)
+					Convey("The challenger fields are as expected", func() {
+						So(challenge.ChallengerTeamID, ShouldEqual, challengerID)
+						So(challenge.ChallengeeTeamID, ShouldEqual, challengeeID)
+					})
 				})
 				Convey("There is no error", func() {
 					So(err, ShouldBeNil)
@@ -133,11 +141,11 @@ func TestChallengeService_List(t *testing.T) {
 	})
 }
 
-func findChallengIDInList(list []challenges.Challenge, id string) bool {
+func findChallengeByID(list []challenges.Challenge, id string) *challenges.Challenge {
 	for _, c := range list {
 		if c.ID == id {
-			return true
+			return &c
 		}
 	}
-	return false
+	return nil
 }

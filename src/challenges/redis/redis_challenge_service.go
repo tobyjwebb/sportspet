@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	teamChallengesKey = "challenges:team:%s"
-	// challengePropertiesKey = "challenges:%s:properties"
-	// challengerKey          = "challenger"
-	// challengeeKey          = "challengee"
+	teamChallengesKey      = "challenges:team:%s"
+	challengePropertiesKey = "challenges:%s:properties"
+	challengerKey          = "challenger"
+	challengeeKey          = "challengee"
 )
 
 var ctx = context.Background()
@@ -37,27 +37,14 @@ func (r *redisChallengeService) Create(challenge *challenges.Challenge) error {
 		}
 	}
 
+	if _, err := r.client.HSet(ctx, fmt.Sprintf(challengePropertiesKey, newChallengeID),
+		challengerKey, challenge.ChallengerTeamID,
+		challengeeKey, challenge.ChallengeeTeamID,
+	).Result(); err != nil {
+		return fmt.Errorf("could not set challenge properties: %w", err)
+	}
 	challenge.ID = newChallengeID
 	return nil
-
-	// _, err = r.client.HSet(ctx, fmt.Sprintf(challengePropertiesKey, newChallengeID),
-	// 	nameKey, challenge.Name,
-	// 	ownerKey, challenge.Owner,
-	// 	rankKey, challenge.Rank,
-	// 	battleIDKey, challenge.Status.BattleID,
-	// 	statusKey, challenge.Status.Status,
-	// 	timestampKey, challenge.Status.Timestamp,
-	// ).Result()
-	// if err != nil {
-	// 	return fmt.Errorf("could not set challenge properties: %w", err)
-	// }
-	// for _, m := range challenge.Members {
-	// 	_, err = r.client.RPush(ctx, fmt.Sprintf(challengeMembersKey, newChallengeID), m).Result()
-	// 	if err != nil {
-	// 		return fmt.Errorf("could not populate challenge member list: %w", err)
-	// 	}
-	// }
-	// return nil
 }
 
 func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, error) {
@@ -69,43 +56,30 @@ func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, err
 	}
 
 	for _, id := range challengeIDsList {
-		// 	if challenge, err := r.getChallengeData(id); err != nil {
-		// 		return nil, fmt.Errorf("could not obtain data for challenge %s: %w", id, err)
-		// 	} else {
-		challengesList = append(challengesList, challenges.Challenge{
-			ID: id,
-		})
-		// 	}
+		if challenge, err := r.getChallengeData(id); err != nil {
+			return nil, fmt.Errorf("could not obtain data for challenge %s: %w", id, err)
+		} else {
+			challengesList = append(challengesList, *challenge)
+		}
 	}
 	return challengesList, nil
 }
 
-// func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
-// 	t := &challenges.Challenge{
-// 		ID:     id,
-// 		Status: challenges.ChallengeStatus{},
-// 	}
-// 	if fields, err := r.client.HGetAll(ctx, fmt.Sprintf(challengePropertiesKey, id)).Result(); err != nil {
-// 		return nil, err
-// 	} else {
-// 		t.Name = fields[nameKey]
-// 		t.Owner = fields[ownerKey]
-// 		t.Rank, _ = strconv.Atoi(fields[rankKey])
-// 		t.Status.Status = fields[statusKey]
-// 		t.Status.BattleID = fields[battleIDKey]
-// 		t.Status.Timestamp = fields[timestampKey]
-// 	}
+func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
+	t := &challenges.Challenge{
+		ID: id,
+	}
+	if fields, err := r.client.HGetAll(ctx, fmt.Sprintf(challengePropertiesKey, id)).Result(); err != nil {
+		return nil, err
+	} else {
+		t.ChallengerTeamID = fields[challengerKey]
+		t.ChallengeeTeamID = fields[challengeeKey]
+	}
 
-// 	if members, err := getAllList(ctx, fmt.Sprintf(challengeMembersKey, id), r.client); err != nil {
-// 		return nil, fmt.Errorf("could not obtain the list of challenge members for %q: %w", id, err)
-// 	} else {
-// 		t.Members = members
-// 	}
+	return t, nil
+}
 
-// 	return t, nil
-// }
-
-// XXX this has been copy&pasted - refactor
+// TODO this has been copy&pasted - refactor
 func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, error) {
 	count, err := r.LLen(ctx, key).Result()
 	if err != nil {
