@@ -1,91 +1,103 @@
 package redis_test
 
-// import (
-// 	"context"
-// 	"reflect"
-// 	"testing"
+import (
+	"context"
+	"testing"
 
-// 	"github.com/go-redis/redis/v8"
-// 	"github.com/tobyjwebb/teamchess/src/challenges"
-// 	redis_challenge_service "github.com/tobyjwebb/teamchess/src/challenges/redis"
-// 	"github.com/tobyjwebb/teamchess/src/test"
-// )
+	"github.com/go-redis/redis/v8"
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/tobyjwebb/teamchess/src/challenges"
+	redis_challenge_service "github.com/tobyjwebb/teamchess/src/challenges/redis"
+	"github.com/tobyjwebb/teamchess/src/test"
+)
 
-// func TestRedischallengesService_Createchallenge(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("Skipping integration test")
-// 	}
+func TestChallengeService_Create(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test")
+	}
 
-// 	ctx := context.Background()
+	ctx := context.Background()
 
-// 	redisContainer, err := test.SetupRedisTestContainer(ctx)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	defer redisContainer.Terminate(ctx)
-// 	client := redis.NewClient(&redis.Options{
-// 		Addr: redisContainer.Addr,
-// 	})
+	redisContainer, err := test.SetupRedisTestContainer(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer redisContainer.Terminate(ctx)
+	client := redis.NewClient(&redis.Options{
+		Addr: redisContainer.Addr,
+	})
 
-// 	r, err := redis_challenge_service.New(client)
-// 	if err != nil {
-// 		t.Fatalf("Could not get Redis challenge Service: %v", err)
-// 	}
+	r, err := redis_challenge_service.New(client)
+	if err != nil {
+		t.Fatalf("Could not get Redis challenge Service: %v", err)
+	}
 
-// 	challenge := &challenges.challenge{}
-// 	gotErr := r.Createchallenge(challenge)
+	Convey("Given a challenge", t, func() {
+		c := &challenges.Challenge{}
 
-// 	if gotErr != nil {
-// 		t.Errorf("Got unexpected error: %v", gotErr)
-// 	}
+		Convey("When Create is called", func() {
+			err := r.Create(c)
 
-// 	if challenge.ID == "" {
-// 		t.Errorf("challenge ID has not been initialized")
-// 	}
-// }
+			Convey("The ID is filled in", func() {
+				So(c.ID, ShouldNotBeEmpty)
+			})
+			Convey("There is no error", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+	})
+}
 
-// func TestRedischallengesService_Listchallenges(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("Skipping integration test")
-// 	}
+func TestChallengeService_List(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test")
+	}
 
-// 	ctx := context.Background()
+	ctx := context.Background()
 
-// 	redisContainer, err := test.SetupRedisTestContainer(ctx)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	defer redisContainer.Terminate(ctx)
-// 	client := redis.NewClient(&redis.Options{
-// 		Addr: redisContainer.Addr,
-// 	})
+	redisContainer, err := test.SetupRedisTestContainer(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer redisContainer.Terminate(ctx)
+	client := redis.NewClient(&redis.Options{
+		Addr: redisContainer.Addr,
+	})
 
-// 	r, err := redis_challenge_service.New(client)
-// 	if err != nil {
-// 		t.Fatalf("Could not get Redis challenge Service: %v", err)
-// 	}
+	r, err := redis_challenge_service.New(client)
+	if err != nil {
+		t.Fatalf("Could not get Redis challenge Service: %v", err)
+	}
 
-// 	challenge := &challenges.challenge{
-// 		Name:  "somename",
-// 		Owner: "someowner",
-// 		Rank:  9,
-// 		Status: challenges.challengeStatus{
-// 			BattleID:  "mybattleid",
-// 			Status:    "hello world",
-// 			Timestamp: "testtimestamp",
-// 		},
-// 		Members: []string{"foo", "bar"},
-// 	}
-// 	_ = r.Createchallenge(challenge)
+	Convey("Given a service", t, func() {
+		Convey("When List is called", func() {
+			list, err := r.List("")
 
-// 	gotchallengeList, err := r.Listchallenges()
-// 	if err != nil {
-// 		t.Fatalf("Could not get challenge list: %v", err)
-// 	}
+			Convey("The result is empty", func() {
+				So(list, ShouldBeEmpty)
+			})
+			Convey("There is no error", func() {
+				So(err, ShouldBeNil)
+			})
+		})
 
-// 	wantchallengeList := []challenges.challenge{*challenge}
+		Convey("Given a challenge", func() {
+			c := &challenges.Challenge{}
+			err := r.Create(c)
+			Convey("No error", func() {
+				So(err, ShouldBeNil)
+			})
 
-// 	if !reflect.DeepEqual(gotchallengeList, wantchallengeList) {
-// 		t.Errorf("Got wrong challenge list. Got:\n%+v\n\nWant:\n%+v\n", gotchallengeList, wantchallengeList)
-// 	}
-// }
+			Convey("When List is called", func() {
+				list, err := r.List("")
+
+				Convey("The result is not empty", func() {
+					So(list, ShouldNotBeEmpty)
+				})
+				Convey("There is no error", func() {
+					So(err, ShouldBeNil)
+				})
+			})
+		})
+	})
+}

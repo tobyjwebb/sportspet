@@ -1,81 +1,84 @@
 package redis
 
-// import (
-// 	"context"
-// 	"fmt"
-// 	"strconv"
+import (
+	"context"
+	"fmt"
 
-// 	"github.com/go-redis/redis/v8"
-// 	"github.com/google/uuid"
-// 	"github.com/tobyjwebb/teamchess/src/challenges"
-// )
+	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
+	"github.com/tobyjwebb/teamchess/src/challenges"
+)
 
-// const (
-// 	challengesKey          = "challenges"
-// 	challengePropertiesKey = "challenges:%s:properties"
-// 	challengeMembersKey    = "challenges:%s:members"
-// 	ownerKey          = "owner"
-// 	nameKey           = "name"
-// 	rankKey           = "rank"
-// 	battleIDKey       = "battle_id"
-// 	statusKey         = "status"
-// 	timestampKey      = "timestamp"
-// )
+const (
+	teamChallengesKey      = "challenges:team:%s"
+	challengePropertiesKey = "challenges:%s:properties"
+	challengerKey          = "challenger"
+	challengeeKey          = "challengee"
+)
 
-// var ctx = context.Background()
+var ctx = context.Background()
 
-// func New(client *redis.Client) (*redisChallengeService, error) {
-// 	return &redisChallengeService{client: client}, nil
-// }
+func New(client *redis.Client) (*redisChallengeService, error) {
+	return &redisChallengeService{client: client}, nil
+}
 
-// type redisChallengeService struct {
-// 	client *redis.Client
-// }
+type redisChallengeService struct {
+	client *redis.Client
+}
 
-// func (r *redisChallengeService) CreateChallenge(challenge *challenges.Challenge) error {
-// 	newChallengeID := uuid.NewString()
+func (r *redisChallengeService) Create(challenge *challenges.Challenge) error {
+	newChallengeID := uuid.NewString()
 
-// 	_, err := r.client.RPush(ctx, challengesKey, newChallengeID).Result()
-// 	if err != nil {
-// 		return fmt.Errorf("could not add challenge ID to challenges list: %w", err)
-// 	}
-// 	_, err = r.client.HSet(ctx, fmt.Sprintf(challengePropertiesKey, newChallengeID),
-// 		nameKey, challenge.Name,
-// 		ownerKey, challenge.Owner,
-// 		rankKey, challenge.Rank,
-// 		battleIDKey, challenge.Status.BattleID,
-// 		statusKey, challenge.Status.Status,
-// 		timestampKey, challenge.Status.Timestamp,
-// 	).Result()
-// 	if err != nil {
-// 		return fmt.Errorf("could not set challenge properties: %w", err)
-// 	}
-// 	for _, m := range challenge.Members {
-// 		_, err = r.client.RPush(ctx, fmt.Sprintf(challengeMembersKey, newChallengeID), m).Result()
-// 		if err != nil {
-// 			return fmt.Errorf("could not populate challenge member list: %w", err)
-// 		}
-// 	}
-// 	challenge.ID = newChallengeID
-// 	return nil
-// }
+	for _, v := range []string{challenge.ChallengeeTeamID, challenge.ChallengerTeamID} {
+		teamChallenge := fmt.Sprintf(teamChallengesKey, v)
+		_, err := r.client.RPush(ctx, teamChallenge, newChallengeID).Result()
+		if err != nil {
+			return fmt.Errorf("could not add challenge ID to challenges list: %w", err)
+		}
+	}
 
-// func (r *redisChallengeService) ListChallenges() ([]challenges.Challenge, error) {
-// 	var challengesList []challenges.Challenge
-// 	challengeIDsList, err := getAllList(ctx, challengesKey, r.client)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("could not get challenge list: %w", err)
-// 	}
+	challenge.ID = newChallengeID
+	return nil
 
-// 	for _, id := range challengeIDsList {
-// 		if challenge, err := r.getChallengeData(id); err != nil {
-// 			return nil, fmt.Errorf("could not obtain data for challenge %s: %w", id, err)
-// 		} else {
-// 			challengesList = append(challengesList, *challenge)
-// 		}
-// 	}
-// 	return challengesList, nil
-// }
+	// _, err = r.client.HSet(ctx, fmt.Sprintf(challengePropertiesKey, newChallengeID),
+	// 	nameKey, challenge.Name,
+	// 	ownerKey, challenge.Owner,
+	// 	rankKey, challenge.Rank,
+	// 	battleIDKey, challenge.Status.BattleID,
+	// 	statusKey, challenge.Status.Status,
+	// 	timestampKey, challenge.Status.Timestamp,
+	// ).Result()
+	// if err != nil {
+	// 	return fmt.Errorf("could not set challenge properties: %w", err)
+	// }
+	// for _, m := range challenge.Members {
+	// 	_, err = r.client.RPush(ctx, fmt.Sprintf(challengeMembersKey, newChallengeID), m).Result()
+	// 	if err != nil {
+	// 		return fmt.Errorf("could not populate challenge member list: %w", err)
+	// 	}
+	// }
+	// return nil
+}
+
+func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, error) {
+	var challengesList []challenges.Challenge
+	key := fmt.Sprintf(teamChallengesKey, teamID)
+	challengeIDsList, err := getAllList(ctx, key, r.client)
+	if err != nil {
+		return nil, fmt.Errorf("could not get challenge list: %w", err)
+	}
+
+	for _, id := range challengeIDsList {
+		// 	if challenge, err := r.getChallengeData(id); err != nil {
+		// 		return nil, fmt.Errorf("could not obtain data for challenge %s: %w", id, err)
+		// 	} else {
+		challengesList = append(challengesList, challenges.Challenge{
+			ID: id,
+		})
+		// 	}
+	}
+	return challengesList, nil
+}
 
 // func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
 // 	t := &challenges.Challenge{
@@ -102,17 +105,18 @@ package redis
 // 	return t, nil
 // }
 
-// func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, error) {
-// 	count, err := r.LLen(ctx, key).Result()
-// 	if err != nil {
-// 		return nil, fmt.Errorf("could not get number of items for key %q: %w", key, err)
-// 	}
-// 	list, err := r.LRange(ctx, key, 0, count).Result()
-// 	if err != nil {
-// 		return nil, fmt.Errorf("could not get list of items for key %q: %w", key, err)
-// 	}
-// 	return list, nil
-// }
+// XXX this has been copy&pasted - refactor
+func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, error) {
+	count, err := r.LLen(ctx, key).Result()
+	if err != nil {
+		return nil, fmt.Errorf("could not get number of items for key %q: %w", key, err)
+	}
+	list, err := r.LRange(ctx, key, 0, count).Result()
+	if err != nil {
+		return nil, fmt.Errorf("could not get list of items for key %q: %w", key, err)
+	}
+	return list, nil
+}
 
 // func (r *redisChallengeService) JoinChallenge(sessionID, challengeID string) (*challenges.Challenge, error) {
 // 	return nil, fmt.Errorf("not implemented")

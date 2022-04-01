@@ -57,6 +57,20 @@ func (s *Server) CreateChallengeHandler(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Check we haven't already challenged this team:
+	if existing, err := s.ChallengeService.List(session.TeamID); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		for _, c := range existing {
+			if c.ChallengeeTeamID == challengedTeamID || c.ChallengerTeamID == challengedTeamID {
+				log.Println("Team", session.TeamID, "already challenged team", challengedTeamID)
+				rw.WriteHeader(http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
 	challenge := &challenges.Challenge{
 		ChallengerTeamID: session.TeamID,
 		ChallengeeTeamID: challengedTeamID,

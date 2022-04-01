@@ -91,21 +91,26 @@ func TestChallengeTeamHandler(t *testing.T) {
 								TeamID: testTeamID,
 							}, nil
 						}
+						challengServiceMock.ListFn = func(teamID string) ([]challenges.Challenge, error) {
+							return []challenges.Challenge{}, nil
+						}
 
-						Convey("Given a challenge mock which returns an error", func() {
-							challengServiceMock.CreateFn = func(challenge *challenges.Challenge) error {
-								return fmt.Errorf("testOHNO-Something-Bad-Happenned-Error")
-							}
+						Convey("Given a challenge mock that returns an empty List", func() {
+							Convey("Given a challenge mock which returns an error", func() {
+								challengServiceMock.CreateFn = func(challenge *challenges.Challenge) error {
+									return fmt.Errorf("testOHNO-Something-Bad-Happenned-Error")
+								}
 
-							Convey("When the challenge request is sent", func() {
-								server.ServeHTTP(response, request)
+								Convey("When the challenge request is sent", func() {
+									server.ServeHTTP(response, request)
 
-								Convey("Then the result is error", func() {
-									So(response.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+									Convey("Then the result is error", func() {
+										So(response.Result().StatusCode, ShouldEqual, http.StatusInternalServerError)
+									})
+
 								})
 
 							})
-
 						})
 
 						Convey("Given a mock that returns success", func() {
@@ -133,6 +138,24 @@ func TestChallengeTeamHandler(t *testing.T) {
 									err := json.NewDecoder(response.Result().Body).Decode(gotJSON)
 									So(err, ShouldBeNil)
 									So(gotJSON.ID, ShouldEqual, theChallengeID)
+								})
+							})
+						})
+
+						Convey("Given an existing challenge to another team", func() {
+							challengServiceMock.ListFn = func(teamID string) ([]challenges.Challenge, error) {
+								return []challenges.Challenge{
+									{
+										ChallengerTeamID: testChallengedTeamID,
+									},
+								}, nil
+							}
+
+							Convey("When the challenge request is sent", func() {
+								server.ServeHTTP(response, request)
+
+								Convey("Then the response is bad request", func() {
+									So(response.Result().StatusCode, ShouldEqual, http.StatusBadRequest)
 								})
 							})
 						})

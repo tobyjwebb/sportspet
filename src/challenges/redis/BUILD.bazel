@@ -5,9 +5,21 @@ go_library(
     srcs = ["redis_challenge_service.go"],
     importpath = "github.com/tobyjwebb/teamchess/src/challenges/redis",
     visibility = ["//visibility:public"],
+    deps = [
+        "//src/challenges",
+        "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_google_uuid//:uuid",
+    ],
 )
 
 go_test(
     name = "redis_test",
     srcs = ["redis_challenge_service_test.go"],
+    deps = [
+        ":redis",
+        "//src/challenges",
+        "//src/test",
+        "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_smartystreets_goconvey//convey",
+    ],
 )
