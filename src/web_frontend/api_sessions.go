@@ -25,7 +25,7 @@ func (s *Server) getSessionHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res := sessionResponse{
-		Battle: session.BattleID,
+		// Battle: session.BattleID, // XXX Get from Team Data
 	}
 	if session.TeamID != "" {
 		team, err := s.TeamService.GetTeamData(session.TeamID)

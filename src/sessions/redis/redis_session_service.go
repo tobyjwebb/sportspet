@@ -54,7 +54,6 @@ func (s *redisSessionService) GetSession(id string) (*sessions.Session, error) {
 		return nil, fmt.Errorf("could not obtain session data: %w", err)
 	} else {
 		sess.TeamID = fields[teamIDKey]
-		sess.BattleID = fields[battleIDKey]
 	}
 
 	return sess, nil
@@ -65,7 +64,6 @@ func (s *redisSessionService) Update(session *sessions.Session) error {
 		ctx,
 		fmt.Sprintf(sessionPropertiesTplt, session.ID),
 		teamIDKey, session.TeamID,
-		battleIDKey, session.BattleID,
 	).Result(); err != nil {
 		return fmt.Errorf("could not update session data: %w", err)
 	}

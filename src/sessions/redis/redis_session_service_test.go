@@ -120,22 +120,6 @@ func TestGetUpdateSession(t *testing.T) {
 						So(gotUpdatedSession.TeamID, ShouldEqual, updatedTeamID)
 					})
 				})
-
-				Convey("When the battle ID is updated", func() {
-					updatedBattleID := "test-updated-battle-id"
-					gotSession.BattleID = updatedBattleID
-					err := r.Update(gotSession)
-
-					Convey("Then no error is returned", func() {
-						So(err, ShouldBeNil)
-					})
-
-					Convey("Then getSession returns the new team ID", func() {
-						gotUpdatedSession, err := r.GetSession(sessionID)
-						So(err, ShouldBeNil)
-						So(gotUpdatedSession.BattleID, ShouldEqual, updatedBattleID)
-					})
-				})
 			})
 		})
 	})
