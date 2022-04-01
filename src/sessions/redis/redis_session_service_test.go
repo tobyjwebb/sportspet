@@ -101,7 +101,9 @@ func TestGetUpdateSession(t *testing.T) {
 			Convey("Then the session is not empty", func() {
 				So(gotSession, ShouldNotBeNil)
 
-				Convey("Then the session's team ID is empty", nil)
+				Convey("Then the session's team ID is empty", func() {
+					So(gotSession.TeamID, ShouldBeEmpty)
+				})
 
 				Convey("When the team's ID is updated", func() {
 					updatedTeamID := "some-updated-team-id"
