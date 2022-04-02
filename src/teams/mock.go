@@ -7,6 +7,7 @@ type TeamServiceMock struct {
 	ListTeamsFn   func() ([]Team, error)
 	JoinTeamFn    func(sessionID, teamID string) (*Team, error)
 	GetTeamDataFn func(id string) (*Team, error)
+	UpdateFn      func(*Team) error
 }
 
 func (t *TeamServiceMock) CreateTeam(team *Team) error {
@@ -32,4 +33,8 @@ func (t *TeamServiceMock) JoinTeam(sessionID, teamID string) (*Team, error) {
 
 func (t *TeamServiceMock) GetTeamData(id string) (*Team, error) {
 	return t.GetTeamDataFn(id)
+}
+
+func (t *TeamServiceMock) Update(team *Team) error {
+	return t.UpdateFn(team)
 }

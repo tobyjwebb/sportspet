@@ -56,7 +56,7 @@ func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, err
 	}
 
 	for _, id := range challengeIDsList {
-		if challenge, err := r.getChallengeData(id); err != nil {
+		if challenge, err := r.Read(id); err != nil {
 			return nil, fmt.Errorf("could not obtain data for challenge %s: %w", id, err)
 		} else {
 			challengesList = append(challengesList, *challenge)
@@ -66,7 +66,7 @@ func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, err
 }
 
 func (r *redisChallengeService) Delete(id string) error {
-	c, err := r.getChallengeData(id)
+	c, err := r.Read(id)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (r *redisChallengeService) removeValFromList(listKey, val string) error {
 	return err
 }
 
-func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
+func (r *redisChallengeService) Read(id string) (*challenges.Challenge, error) {
 	t := &challenges.Challenge{
 		ID: id,
 	}

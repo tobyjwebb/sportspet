@@ -7,8 +7,11 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/tobyjwebb/teamchess/src/battles"
 	"github.com/tobyjwebb/teamchess/src/challenges"
 )
+
+const initialBoardStatus = "CHBQKBHCPPPPPPPP                                ppppppppchbqkbhc"
 
 func (s *Server) setupChallengesRoutes() *chi.Mux {
 	challenges := chi.NewRouter()
@@ -134,9 +137,50 @@ func (s *Server) CreateChallengeHandler(rw http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) AcceptChallengeHandler(rw http.ResponseWriter, r *http.Request) {
-	// XXX implement AcceptChallengeHandler
+	sessionID := getSessionIDFromAuth(r)
+	log.Println("Got session id", sessionID)
+	challengeID := chi.URLParam(r, "challenge_id")
+	log.Println("Got challenge id", challengeID)
+
+	status, battleID, err := s.doAcceptChallenge(sessionID, challengeID)
+	if err != nil {
+		rw.WriteHeader(status)
+		return
+	}
+
 	setJSON(rw)
-	fmt.Fprintf(rw, `{"battle_id":"aaabbb-cccc-ffff-11122233"}`)
+	fmt.Fprintf(rw, `{"battle_id":"%s"}`, battleID)
+}
+
+func (s *Server) doAcceptChallenge(sessionID, challengeID string) (status int, battleID string, err error) {
+	challenge, err := s.ChallengeService.Read(challengeID)
+	if err != nil {
+		return http.StatusInternalServerError, "", err
+	}
+	// XXX Check team is not already in a battle... (or implement multiple battles)
+	if err := s.ChallengeService.Delete(challengeID); err != nil {
+		return http.StatusInternalServerError, "", err
+	}
+	battle := &battles.Battle{
+		Board:       initialBoardStatus,
+		WhiteTeamID: challenge.ChallengerTeamID,
+		BlackTeamID: challenge.ChallengeeTeamID,
+	}
+	if err := s.BattleService.Create(battle); err != nil {
+		return http.StatusInternalServerError, "", err
+	}
+	for _, teamID := range []string{battle.WhiteTeamID, battle.BlackTeamID} {
+		if t, err := s.TeamService.GetTeamData(teamID); err != nil {
+			return http.StatusInternalServerError, "", err
+		} else {
+			t.Status.BattleID = battle.ID
+			if err := s.TeamService.Update(t); err != nil {
+				return http.StatusInternalServerError, "", err
+			}
+		}
+	}
+
+	return http.StatusCreated, battle.ID, nil
 }
 
 type createChallengeResponse struct {

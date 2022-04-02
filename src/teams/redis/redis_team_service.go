@@ -71,6 +71,19 @@ func (r *redisTeamService) CreateTeam(team *teams.Team) error {
 	return nil
 }
 
+// TODO: DRY Update Team
+func (r *redisTeamService) Update(team *teams.Team) error {
+	_, err := r.client.HSet(ctx, fmt.Sprintf(teamPropertiesKey, team.ID),
+		nameKey, team.Name,
+		ownerKey, team.Owner,
+		rankKey, team.Rank,
+		battleIDKey, team.Status.BattleID,
+		statusKey, team.Status.Status,
+		timestampKey, team.Status.Timestamp,
+	).Result()
+	return err
+}
+
 func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
 	var teamsList []teams.Team
 	teamIDsList, err := getAllList(ctx, teamsKey, r.client)

@@ -8,8 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const initialBoardStatus = "CHBQKBHCPPPPPPPP              qQ                ppppppppchbqkbhc"
-
 func (s *Server) setupBattlesRoutes() *chi.Mux {
 	challenges := chi.NewRouter()
 	challenges.Get("/{challenge_id}/state", s.getBatleStateHandler)

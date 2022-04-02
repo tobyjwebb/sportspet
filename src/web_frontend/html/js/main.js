@@ -53,7 +53,7 @@ $(function () {
     })
 
     $('#btnLeaveTeam').click(function () {
-        alert('Implement btnLeaveTeam'); // XXX implement btn
+        alert('Implement btnLeaveTeam'); // XXX implement leave team btn
     });
 
     $('#btnRefreshTeamsTable').click(function () {
