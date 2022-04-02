@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/tobyjwebb/teamchess/src/battles"
+	"github.com/tobyjwebb/teamchess/src/board"
 )
 
 func (s *Server) setupBattlesRoutes() *chi.Mux {
@@ -22,8 +23,8 @@ func (s *Server) getBatleStateHandler(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Got battle id", battleID)
 
 	status, battle, err := s.doGetBattleState(battleID)
-	rw.WriteHeader(status)
 	if err != nil {
+		rw.WriteHeader(status)
 		return
 	}
 
@@ -43,7 +44,7 @@ func (s *Server) getBatleStateHandler(rw http.ResponseWriter, r *http.Request) {
 		"board": "%s",
 		"white_team": "%s",
 		"black_team": "%s",
-		"turn":"%s",
+		"turn":"%s"
 	}`, battle.Board, battle.WhiteTeamID, battle.BlackTeamID, turn)
 }
 
@@ -70,6 +71,35 @@ func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
 	from := r.FormValue("from")
 	to := r.FormValue("to")
 	log.Println("XXX move from", from, "to", to)
+	battleID := chi.URLParam(r, "battle_id")
+	log.Println("Got battle id", battleID)
+	sessionID := getSessionIDFromAuth(r)
+	status, err := s.doMovePiece(sessionID, battleID, from, to)
+	rw.WriteHeader(status)
+	if err != nil {
+		return
+	}
 	setJSON(rw)
 	fmt.Fprintf(rw, `{}`)
+}
+
+func (s *Server) doMovePiece(sessionID, battleID, from, to string) (status int, err error) {
+	// TODO: Check if allowed to move (player's turn)
+
+	battle, err := s.BattleService.GetData(battleID)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	b := board.New(battle.Board)
+	b.MovePiece(from, to)
+	after := b.State()
+
+	battle.Board = after
+	battle.MoveCount++
+	if err := s.BattleService.Update(battle); err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusAccepted, nil
 }
