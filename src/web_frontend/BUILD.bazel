@@ -28,6 +28,8 @@ go_library(
     importpath = "github.com/tobyjwebb/teamchess/src/web_frontend",
     visibility = ["//visibility:public"],
     deps = [
+        "//src/battles",
+        "//src/battles/redis",
         "//src/challenges",
         "//src/challenges/redis",
         "//src/sessions",

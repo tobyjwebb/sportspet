@@ -8,6 +8,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-redis/redis/v8"
+	"github.com/tobyjwebb/teamchess/src/battles"
+	redis_battle_service "github.com/tobyjwebb/teamchess/src/battles/redis"
 	"github.com/tobyjwebb/teamchess/src/challenges"
 	redis_challenge_service "github.com/tobyjwebb/teamchess/src/challenges/redis"
 	"github.com/tobyjwebb/teamchess/src/sessions"
@@ -22,6 +24,7 @@ type Server struct {
 	SessionService   sessions.SessionService
 	TeamService      teams.TeamService
 	ChallengeService challenges.ChallengeService
+	BattleService    battles.BattleService
 	redisClient      *redis.Client
 	router           *chi.Mux
 }
@@ -52,6 +55,9 @@ func (s *Server) Start() error {
 	}
 	if err := s.initChallengeService(); err != nil {
 		return fmt.Errorf("could not init challenge service: %w", err)
+	}
+	if err := s.initBattleService(); err != nil {
+		return fmt.Errorf("could not init battle service: %w", err)
 	}
 
 	log.Println("Starting server on", s.config.FrontendAddr)
@@ -87,6 +93,22 @@ func (s *Server) initChallengeService() error {
 		return fmt.Errorf("could not init Redis challenge service: %w", err)
 	}
 	s.ChallengeService = redisChallengeService
+	return nil
+}
+
+func (s *Server) initBattleService() error {
+	if s.BattleService != nil {
+		return nil
+	}
+	client, err := s.getRedisClient()
+	if err != nil {
+		return fmt.Errorf("could not init Redis client: %w", err)
+	}
+	service, err := redis_battle_service.New(client)
+	if err != nil {
+		return fmt.Errorf("could not init Redis battle service: %w", err)
+	}
+	s.BattleService = service
 	return nil
 }
 

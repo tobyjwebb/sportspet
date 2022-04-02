@@ -1,16 +1,25 @@
 package battles
 
 type Battle struct {
-	// ID      string       `json:"id"`
-	// Name    string       `json:"name"`
-	// Owner   string       `json:"owner"`
-	// Rank    int          `json:"rank"`
-	// Status  BattleStatus `json:"status"`
-	// Members []string     `json:"members,omitempty"`
+	ID          string
+	Board       string
+	WhiteTeamID string
+	BlackTeamID string
+	MoveCount   int // With this, can tell turn
 }
 
-// type BattleStatus struct {
-// 	BattleID  string `json:"battle_id,omitempty"`
-// 	Status    string `json:"status,omitempty"`
-// 	Timestamp string `json:"timestamp"`
+// type Move struct {
+// 	Num int
+// 	BattleID string
+// 	SessionID string // ?
+//  From Position
+//  To Position
+// 	Nick string // ?
+// 	Piece byte
+// 	Timestamp string
+// }
+
+// type Position struct {
+// 	X int
+// 	Y int
 // }

@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "redis",
@@ -8,10 +8,6 @@ go_library(
     deps = [
         "//src/battles",
         "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_google_uuid//:uuid",
     ],
-)
-
-go_test(
-    name = "redis_test",
-    srcs = ["redis_battle_service_test.go"],
 )
