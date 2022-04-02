@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/tobyjwebb/teamchess/src/sessions"
 	"github.com/tobyjwebb/teamchess/src/teams"
 )
 
@@ -24,12 +25,13 @@ const (
 
 var ctx = context.Background()
 
-func New(client *redis.Client) (*redisTeamService, error) {
-	return &redisTeamService{client: client}, nil
+func New(client *redis.Client, sessionService sessions.SessionService) (*redisTeamService, error) {
+	return &redisTeamService{client: client, sessionService: sessionService}, nil
 }
 
 type redisTeamService struct {
-	client *redis.Client
+	client         *redis.Client
+	sessionService sessions.SessionService
 }
 
 func (r *redisTeamService) CreateTeam(team *teams.Team) error {
@@ -57,7 +59,29 @@ func (r *redisTeamService) CreateTeam(team *teams.Team) error {
 		}
 	}
 	team.ID = newTeamID
+	if s, err := r.sessionService.GetSession(team.Owner); err != nil {
+		return err
+	} else {
+		s.TeamID = newTeamID
+		if err := r.sessionService.Update(s); err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+// TODO: DRY Update Team
+func (r *redisTeamService) Update(team *teams.Team) error {
+	_, err := r.client.HSet(ctx, fmt.Sprintf(teamPropertiesKey, team.ID),
+		nameKey, team.Name,
+		ownerKey, team.Owner,
+		rankKey, team.Rank,
+		battleIDKey, team.Status.BattleID,
+		statusKey, team.Status.Status,
+		timestampKey, team.Status.Timestamp,
+	).Result()
+	return err
 }
 
 func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
@@ -68,7 +92,7 @@ func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
 	}
 
 	for _, id := range teamIDsList {
-		if team, err := r.getTeamData(id); err != nil {
+		if team, err := r.GetTeamData(id); err != nil {
 			return nil, fmt.Errorf("could not obtain data for team %s: %w", id, err)
 		} else {
 			teamsList = append(teamsList, *team)
@@ -77,7 +101,7 @@ func (r *redisTeamService) ListTeams() ([]teams.Team, error) {
 	return teamsList, nil
 }
 
-func (r *redisTeamService) getTeamData(id string) (*teams.Team, error) {
+func (r *redisTeamService) GetTeamData(id string) (*teams.Team, error) {
 	t := &teams.Team{
 		ID:     id,
 		Status: teams.TeamStatus{},
@@ -115,5 +139,20 @@ func getAllList(ctx context.Context, key string, r *redis.Client) ([]string, err
 }
 
 func (r *redisTeamService) JoinTeam(sessionID, teamID string) (*teams.Team, error) {
-	return nil, fmt.Errorf("not implemented")
+	sess, err := r.sessionService.GetSession(sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("could not obtain session: %w", err)
+	}
+
+	_, err = r.client.RPush(ctx, fmt.Sprintf(teamMembersKey, teamID), sessionID).Result()
+	if err != nil {
+		return nil, fmt.Errorf("could not update team member list: %w", err)
+	}
+
+	sess.TeamID = teamID
+	if err := r.sessionService.Update(sess); err != nil {
+		return nil, fmt.Errorf("could not not update session: %w", err)
+	}
+
+	return r.GetTeamData(teamID)
 }

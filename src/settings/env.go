@@ -3,9 +3,8 @@ package settings
 import "os"
 
 type Config struct {
-	FrontendAddr    string
-	RedisAddr       string
-	UserServiceAddr string
+	FrontendAddr string
+	RedisAddr    string
 }
 
 func GetConfig() *Config {
@@ -17,13 +16,8 @@ func GetConfig() *Config {
 	if redisAddr == "" {
 		redisAddr = ":6379"
 	}
-	userServiceAddr := os.Getenv("TC_USER_SERVICE_ADDR")
-	if userServiceAddr == "" {
-		userServiceAddr = ":8082"
-	}
 	return &Config{
-		FrontendAddr:    frontendAddr,
-		UserServiceAddr: userServiceAddr,
-		RedisAddr:       redisAddr,
+		FrontendAddr: frontendAddr,
+		RedisAddr:    redisAddr,
 	}
 }

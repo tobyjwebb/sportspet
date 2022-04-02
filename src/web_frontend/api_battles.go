@@ -8,8 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const initialBoardStatus = "CHBQKBHCPPPPPPPP              qQ                ppppppppchbqkbhc"
-
 func (s *Server) setupBattlesRoutes() *chi.Mux {
 	challenges := chi.NewRouter()
 	challenges.Get("/{challenge_id}/state", s.getBatleStateHandler)
@@ -48,7 +46,7 @@ func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement postBatleMoveHandler
 	from := r.FormValue("from")
 	to := r.FormValue("to")
-	log.Println("XXX move from", from, "to", to) // XXX cleanup log
+	log.Println("XXX move from", from, "to", to)
 	setJSON(rw)
 	fmt.Fprintf(rw, `{}`)
 }
