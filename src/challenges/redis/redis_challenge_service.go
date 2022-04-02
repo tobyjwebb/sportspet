@@ -65,6 +65,10 @@ func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, err
 	return challengesList, nil
 }
 
+func (t *redisChallengeService) Delete(challengeID string) error {
+	return fmt.Errorf("not implemented") // XXX implement Challenges.Delete
+}
+
 func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
 	t := &challenges.Challenge{
 		ID: id,

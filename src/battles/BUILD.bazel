@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "battles",
+    srcs = [
+        "interface.go",
+        "mock.go",
+        "type.go",
+    ],
+    importpath = "github.com/tobyjwebb/teamchess/src/battles",
+    visibility = ["//visibility:public"],
+)
