@@ -30,6 +30,7 @@ go_library(
     deps = [
         "//src/battles",
         "//src/battles/redis",
+        "//src/board",
         "//src/challenges",
         "//src/challenges/redis",
         "//src/sessions",
