@@ -65,8 +65,27 @@ func (r *redisChallengeService) List(teamID string) ([]challenges.Challenge, err
 	return challengesList, nil
 }
 
-func (t *redisChallengeService) Delete(challengeID string) error {
-	return fmt.Errorf("not implemented") // XXX implement Challenges.Delete
+func (r *redisChallengeService) Delete(id string) error {
+	c, err := r.getChallengeData(id)
+	if err != nil {
+		return err
+	}
+	_, err = r.client.Del(ctx, fmt.Sprintf(challengePropertiesKey, id)).Result()
+	if err != nil {
+		return err
+	}
+	for _, v := range []string{c.ChallengeeTeamID, c.ChallengerTeamID} {
+		if err := r.removeValFromList(fmt.Sprintf(teamChallengesKey, v), id); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *redisChallengeService) removeValFromList(listKey, val string) error {
+	_, err := r.client.LRem(ctx, listKey, 0, val).Result()
+	return err
 }
 
 func (r *redisChallengeService) getChallengeData(id string) (*challenges.Challenge, error) {
