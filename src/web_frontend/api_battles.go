@@ -70,7 +70,7 @@ func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
 	// XXX implement postBatleMoveHandler
 	from := r.FormValue("from")
 	to := r.FormValue("to")
-	log.Println("XXX move from", from, "to", to)
+	log.Println("Move from", from, "to", to)
 	battleID := chi.URLParam(r, "battle_id")
 	log.Println("Got battle id", battleID)
 	sessionID := getSessionIDFromAuth(r)
@@ -84,7 +84,7 @@ func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) doMovePiece(sessionID, battleID, from, to string) (status int, err error) {
-	// TODO: Check if allowed to move (player's turn)
+	// TODO: Check if allowed to move (teams's turn)
 
 	battle, err := s.BattleService.GetData(battleID)
 	if err != nil {
