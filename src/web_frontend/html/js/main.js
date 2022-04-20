@@ -59,7 +59,16 @@ $(function () {
     $('#btnRefreshTeamsTable').click(function () {
         refreshTeamsStatus();
         refreshChallenges();
+        getSessionStatus().then(() => {
+            if (currentBattle) {
+                $('#current-team-battle').show();
+            }
+        })
     });
+
+    $('#current-team-battle button').click(function () {
+        goToBattle();
+    })
 
     $('#btnJoinTeam').click(function () {
         $confirmJoinTeam.hide();
@@ -169,13 +178,16 @@ $(function () {
             url: `/api/v1/challenges/${challengeID}/accept`,
             headers: getAuthHeader(),
             success: function (res) {
-                // We're not going to need battleID for now, because it's now returned by API
-                // document.location.href = `/battle.html?session=${getSessionID()}&battle=${res.battle_id}`;
-                document.location.href = `/battle.html?session=${getSessionID()}`;
+                goToBattle();
             }
         })
-
     })
+
+    function goToBattle() {
+        // We're not going to need battleID for now, because it's now returned by API
+        // document.location.href = `/battle.html?session=${getSessionID()}&battle=${res.battle_id}`;
+        goToPageWithSession('battle')
+    }
 
     $('#team_list').on('click', '.watchBattle', function () {
         // XXX implement watch battle button
@@ -189,5 +201,4 @@ $(function () {
             alert('Challenge sent.');
         });
     })
-
 });

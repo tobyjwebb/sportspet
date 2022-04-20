@@ -76,3 +76,7 @@ function challengeTeam(teamID) {
         });
     });
 }
+
+function goToPageWithSession(page) {
+    document.location.href = `/${page}.html?session=${getSessionID()}`;
+}

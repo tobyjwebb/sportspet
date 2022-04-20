@@ -57,7 +57,7 @@ func (s *Server) doGetBattleState(battleID string) (status int, battle *battles.
 }
 
 func (s *Server) getBatleLogHandler(rw http.ResponseWriter, r *http.Request) {
-	// XXX implement getBatleLogHandler
+	// XXX implement getBatleLogHandler? Cleanup?
 	setJSON(rw)
 	fmt.Fprintf(rw, `{"latest_movements":[
 			{"n": 5, "who":"user1", "piece":"q", "from": "A5", "to":"C6", "timestamp":"2022-02-22T11:11:11Z"},
@@ -67,7 +67,6 @@ func (s *Server) getBatleLogHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) postBatleMoveHandler(rw http.ResponseWriter, r *http.Request) {
-	// XXX implement postBatleMoveHandler
 	from := r.FormValue("from")
 	to := r.FormValue("to")
 	log.Println("Move from", from, "to", to)

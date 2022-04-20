@@ -28,6 +28,10 @@ $(function () {
             movement = { from: cellID };
         }
     })
+
+    $('#btnLeaveBattle').click(function () {
+        goToPageWithSession('main');
+    });
 });
 
 var movement = null; // {from,to}
