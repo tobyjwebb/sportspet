@@ -56,15 +56,16 @@ $(function () {
         alert('Implement btnLeaveTeam'); // XXX implement leave team btn
     });
 
-    $('#btnRefreshTeamsTable').click(function () {
+    function refreshLobbyLoop() {
         refreshTeamsStatus();
         refreshChallenges();
         getSessionStatus().then(() => {
             if (currentBattle) {
                 $('#current-team-battle').show();
             }
-        })
-    });
+        });
+        setTimeout(refreshLobbyLoop, 5000);
+    }
 
     $('#current-team-battle button').click(function () {
         goToBattle();
@@ -114,8 +115,7 @@ $(function () {
         currentTeamID = teamID;
         $currentTeam.text(teamName);
         switchView('lobby');
-        refreshTeamsStatus();
-        refreshChallenges();
+        refreshLobbyLoop();
     }
 
     function refreshTeamsStatus() {
@@ -163,7 +163,9 @@ $(function () {
                 var $list = $challenges.find('ul');
                 $list.html('');
                 challenges.forEach(c => {
-                    $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span> (<span>${c.timestamp}</span> ago)</li>`).appendTo($list)
+                    // TODO: Add the X minutes ago text:
+                    // $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span> (<span>${c.timestamp}</span> ago)</li>`).appendTo($list)
+                    $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span></li>`).appendTo($list)
                 });
                 $challenges.show();
             }
@@ -201,4 +203,11 @@ $(function () {
             alert('Challenge sent.');
         });
     })
+
+    // On page load, check if we have already joined a team, and if so, jump to the lobby:
+    getSessionStatus().then(() => {
+        if (currentTeamID) {
+            switchToLobby(currentTeamID, currentTeamName);
+        }
+    });
 });

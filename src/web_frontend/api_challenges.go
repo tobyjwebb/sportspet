@@ -72,7 +72,7 @@ func (s *Server) getSessionChallengesHandler(rw http.ResponseWriter, r *http.Req
 type challengeResponse struct {
 	ID         string                      `json:"id"`
 	Challenger challengeChallengerResponse `json:"challenger"`
-	Timestamp  string
+	Timestamp  string                      `json:"timestamp"`
 }
 
 type challengeChallengerResponse struct {
