@@ -1,9 +1,16 @@
 $(function () {
     var $board = $('#chessboard');
-    drawChessboard($board);
-    updateChessPieces($board, boardStatus);
+    // We need to get the current team colour before drawing the board,
+    // to see if we need to invert it.
     getSessionStatus().then(() => {
-        refreshBoardStatusPeriodic();
+        let inverted = false;
+        getBattleStatus(currentBattle).then(res => {
+            if (currentTeamID == res.black_team) {
+                inverted = true;
+            }
+            drawChessboard($board, inverted);
+            refreshBoardStatusPeriodic();
+        });
     })
 
     $board.on('click', 'td.black, td.white', function () {
@@ -52,9 +59,9 @@ var pieceSprites = {
     K: '♔',
 };
 
-var boardStatus = "CHBQKBHCPPPPPPPP                                ppppppppchbqkbhc";
+var boardStatus = "                                                                ";
 
-function drawChessboard($board) {
+function drawChessboard($board, inverted) {
     var html = '';
 
     for (var row = 8; row > 0; row--) {
@@ -62,7 +69,10 @@ function drawChessboard($board) {
         // html += `<tr><td>${row}</td>`;
         html += `<tr>`;
         for (var col = 1; col <= 8; col++) {
-            let id = `${letters[col - 1]}${row}`;
+            // We invert the rows/columns if the board is inverted, so the pieces are drawn in the correct coordinates.
+            let id = inverted ?
+                `${letters[8 - col]}${9 - row}` :
+                `${letters[col - 1]}${row}`;
             let colour = (row + col) % 2 ? 'white' : 'black';
             html += `<td data-cell="${id}" class="${id} ${colour}"></td>`;
         }
