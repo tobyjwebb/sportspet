@@ -163,7 +163,9 @@ $(function () {
                 var $list = $challenges.find('ul');
                 $list.html('');
                 challenges.forEach(c => {
-                    $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span> (<span>${c.timestamp}</span> ago)</li>`).appendTo($list)
+                    // TODO: Add the X minutes ago text:
+                    // $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span> (<span>${c.timestamp}</span> ago)</li>`).appendTo($list)
+                    $(`<li><button data-challenge-id="${c.id}">Accept</button> challenge from <span>${c.challenger.name}</span></li>`).appendTo($list)
                 });
                 $challenges.show();
             }
