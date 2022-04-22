@@ -201,4 +201,11 @@ $(function () {
             alert('Challenge sent.');
         });
     })
+
+    // On page load, check if we have already joined a team, and if so, jump to the lobby:
+    getSessionStatus().then(() => {
+        if (currentTeamID) {
+            switchToLobby(currentTeamID, currentTeamName);
+        }
+    });
 });
