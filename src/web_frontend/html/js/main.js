@@ -56,15 +56,16 @@ $(function () {
         alert('Implement btnLeaveTeam'); // XXX implement leave team btn
     });
 
-    $('#btnRefreshTeamsTable').click(function () {
+    function refreshLobbyLoop() {
         refreshTeamsStatus();
         refreshChallenges();
         getSessionStatus().then(() => {
             if (currentBattle) {
                 $('#current-team-battle').show();
             }
-        })
-    });
+        });
+        setTimeout(refreshLobbyLoop, 5000);
+    }
 
     $('#current-team-battle button').click(function () {
         goToBattle();
@@ -114,8 +115,7 @@ $(function () {
         currentTeamID = teamID;
         $currentTeam.text(teamName);
         switchView('lobby');
-        refreshTeamsStatus();
-        refreshChallenges();
+        refreshLobbyLoop();
     }
 
     function refreshTeamsStatus() {
