@@ -58,7 +58,9 @@ function drawChessboard($board) {
     var html = '';
 
     for (var row = 8; row > 0; row--) {
-        html += `<tr><td>${row}</td>`;
+        // TODO: re-add the coordinates
+        // html += `<tr><td>${row}</td>`;
+        html += `<tr>`;
         for (var col = 1; col <= 8; col++) {
             let id = `${letters[col - 1]}${row}`;
             let colour = (row + col) % 2 ? 'white' : 'black';
@@ -68,11 +70,11 @@ function drawChessboard($board) {
     }
 
     // Letter row on bottom:
-    html += `<tr><td></td>`
-    for (var col = 0; col < 8; col++) {
-        html += `<td>${letters[col]}</td>`;
-    }
-    html += `</tr>`
+    // html += `<tr><td></td>`
+    // for (var col = 0; col < 8; col++) {
+    //     html += `<td>${letters[col]}</td>`;
+    // }
+    // html += `</tr>`
 
     $board.html(`<tbody>${html}</tbody>`)
 }
