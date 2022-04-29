@@ -26,6 +26,6 @@ binpath=$scriptdir/../dist/bin/src/cmd/web_frontend/web_frontend_/web_frontend
 # $binpath
 $binpath &
 
-echo "RUNNING ngrok PROXY..."
-sleep 0.3
+echo "PRESS ENTER TO RUN ngrok PROXY..."
+read
 ngrok http $HTTP_PORT
